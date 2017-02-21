@@ -1,0 +1,17 @@
+﻿using UnityEngine;
+
+namespace Assets.Scripts.UI_Components.Old.Menu
+{
+    [RequireComponent(typeof(Menu))]
+    public abstract class AMenuBehaviour : MonoBehaviour
+    {
+        protected MenuManager menuManager;
+        protected Menu menu;
+
+        protected virtual void Start()
+        {
+            menu = GetComponent<Menu>();
+            menuManager = menu.menuManager;
+        }
+    }
+}

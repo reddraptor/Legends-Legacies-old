@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42b2d53d9d0e3bc42af3f859b619d936, type: 3}
+  m_Name: Default Game World
+  m_EditorClassIdentifier: 
+  DEFAULT_SEED: 7281068
+  mapGenerator: {fileID: 11400000, guid: 99a906e575685fd4a93c431512745d54, type: 2}
+  DEFAULT_LOADED_CHUNK_DISTANCE: 3
+  START_LOCATION_X: 0
+  START_LOCATION_Y: 0
+  player: {fileID: 1000012436119000, guid: 75a8586fe8efd3748916b2f07b6365ca, type: 2}

@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Main Menu
+  - Create Menu
+  - Load Menu
+  - Save Menu
+  - Load View Content
+  - Load Button
+  - Quit Button
+  - Save Button
+  - New Button
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Terrain
+    uniqueID: 1513111625
+    locked: 0
+  - name: Mobile
+    uniqueID: 2266416539
+    locked: 0
+  - name: Player
+    uniqueID: 3220534009
+    locked: 0
+  - name: UI
+    uniqueID: 923507319
+    locked: 0
+  - name: Menu
+    uniqueID: 1835019751
+    locked: 0

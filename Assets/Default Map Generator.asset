@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a729dc90b656f3449a7d55229cfb6fa4, type: 3}
+  m_Name: Default Map Generator
+  m_EditorClassIdentifier: Assembly-CSharp::Map_Generator
+  MAX_ELEVATION: 100
+  MOUNTAIN_ELEVATION_MIN: 50
+  VALLEY_ELEVATION_MAX: 90
+  WATER_BODY_ELEVATION_MAX: 50
+  waterTile: {fileID: 102118, guid: ea1970f417c3fa944bf62beb642b2030, type: 2}
+  stoneTile: {fileID: 1000014155590958, guid: ee7c2e566a2158d459e41ffbaaf0c965, type: 2}
+  grassTile: {fileID: 178574, guid: cd9bb1e3b9bfa4a429338328ff93edff, type: 2}
+  gameWorld: {fileID: 11400000, guid: 8c9d042e95b690a4f84e8efb0b33e190, type: 2}

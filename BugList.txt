@@ -1,0 +1,23 @@
+﻿Menus
+-----
+From a running game world, creating a new game world with the same seed does not reset the world. 
+Create seed field has tiny text. Fix when redo menu look
+
+Start World
+--------------
+FIXED If starting menu closed, mousescroll will be active, resulting in error. Expect either starting menu not able to be closed, mousescroll not be activated, or stop error (probably from player not being instanced yet). Fix when determine what to do at starting screen.
+Loading from a save game with the same world as the currently loaded game, does not update the game world player location
+
+Input Control
+-------------
+Player avatar not moving opposite to map scrolling with mouse scroll in some frames. Particularly, just after returning mouse to center.
+Player avatar no longer has smooth movement
+
+Game Load
+---------
+Player position not updated from game save
+
+Chuck Loading
+-------------
+Heading off the edge of the currently loaded chunks, causes completely new terrain to be loaded
+

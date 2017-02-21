@@ -1,0 +1,10 @@
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject2\bin\Debug\UnitTestProject2.dll
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject2\bin\Debug\UnitTestProject2.pdb
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject2\bin\Debug\Assembly-CSharp.dll
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject2\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject2\bin\Debug\UnityEngine.dll
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject2\bin\Debug\Assembly-CSharp.pdb
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject2\bin\Debug\UnityEngine.xml
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject2\obj\Debug\ChunkTest.csprojResolveAssemblyReference.cache
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject2\obj\Debug\UnitTestProject2.dll
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject2\obj\Debug\UnitTestProject2.pdb

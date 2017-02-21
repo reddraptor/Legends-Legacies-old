@@ -1,0 +1,134 @@
+﻿Current
+------
+Try an entity system approach
+-outline with comments on each manager then implement
+-TileMapManager DONE
+-MobileManager DONE
+-GameManager DONE
+-WorldManager DONE
+-SpawnManager DONE
+--LocationList DataType, Location Component -> removed, using EntityManager
+-InputManager DONE
+--player movement DONE
+--map scroll DONE
+--menus DONE
+-MenuManager
+--Main Menu DONE
+--Create Menu DONE
+--Save Menu --> need PresistanceManager DONE
+--Load Menu --> need PresistanceManager DONE
+---Ability to clear all game assets --> DONE
+
+
+Change Serialization Implementation
+-PersistanceManager? DONE
+
+Early enemy implementation
+-spawning and map scrolling DONE
+-behaviors
+-spawning and unspawning with chunk load/unload
+attributes
+UI widgets
+combat system
+
+Input Controls
+--------------
+Short cuts
+
+Main Menu
+---------
+Create Options menu when we have options
+Combine Save and loading menus
+Add additional options to create window
+
+Other Menus
+-----------
+Character
+Inventory
+Skills/Spells
+World Map
+
+Console
+--------
+
+TileMap
+-------
+Move tiles to sprite atlas
+Consider moving to stitched together sprites textured on single mesh. Perhaps better performance?
+
+UI
+--
+Create UI widget controller
+Create UI widgets
+
+Entities
+--------
+Unique entity Ids
+
+Player/Enemies/NPC
+-------
+Speed modifiers by tile, props, status, etc
+sight(perception) system
+status effects
+inventory system
+attributes
+skills/spells
+combat system
+
+Enemies
+----
+Extend mobile for enemies
+Random enemy placement on loading new chunks
+active enemies saved to world data
+
+Items
+----
+Create Item system
+loot
+items saved to world data
+
+
+NPCS
+----
+Extend mobile for npcs
+npcs saved to world data
+populate settlements
+random npcs to rescue/recruit
+party system
+
+
+Settlements and Dungeons
+------------------------------------
+Create settlement and dungeon system
+settlements/dungeons saved to world data
+
+Unloaded Chunks Simulations
+---------------------------
+Implement
+
+Location
+---------
+Change coordinate system entirely to Chuck coordinates
+Location override GetHashCode and Equals 
+Location Pin List implementation
+Location Serialization for world save - Done
+Pin List Serialization
+mobiles - enemies, npcs
+tile changes
+item drops
+Settlement/dungeon centers
+
+Props (trees, rocks, etc...)
+----
+Implement
+Serialization 
+over system
+
+Tiles
+-----
+serialization
+transition tiles
+
+Location
+--------
+override GetHashCode and Equals 

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 10792c1183a9d8d40a80ca1aaad432f5
+timeCreated: 1476680229
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - tile_Grass: {fileID: 178574, guid: cd9bb1e3b9bfa4a429338328ff93edff, type: 2}
+  - tile_Water: {fileID: 102118, guid: ea1970f417c3fa944bf62beb642b2030, type: 2}
+  - tile_Stone: {fileID: 1000014155590958, guid: ee7c2e566a2158d459e41ffbaaf0c965,
+      type: 2}
+  - mainCamera: {instanceID: 0}
+  - avatar: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

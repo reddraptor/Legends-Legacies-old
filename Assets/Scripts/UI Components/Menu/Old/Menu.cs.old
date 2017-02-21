@@ -1,0 +1,35 @@
+﻿using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+namespace Assets.Scripts.UI_Components.Old.Menu
+{
+    public class Menu : MonoBehaviour
+    {
+        /* EDITOR FIELDS */
+        public Menu callingMenu = null;
+        public AMenuBehaviour behaviourScript;
+        public MenuManager menuManager;
+
+        /* PUBLIC PROPERTIES */
+        public bool open
+        {
+            get { return canvas.enabled; }
+            set
+            { 
+                canvas.enabled = value;
+            }
+        }
+
+        /* PRIVATE FIELDS */
+        Canvas canvas;
+        bool firstOpen;
+        bool firstClose;
+
+        private void Start()
+        {
+            canvas = GetComponent<Canvas>();
+        }
+        
+    }
+}

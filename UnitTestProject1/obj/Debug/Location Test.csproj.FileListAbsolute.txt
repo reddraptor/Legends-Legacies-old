@@ -1,0 +1,10 @@
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject1\obj\Debug\Location Test.csprojResolveAssemblyReference.cache
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject1\bin\Debug\UnitTestProject1.dll
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject1\bin\Debug\UnitTestProject1.pdb
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject1\bin\Debug\Assembly-CSharp.dll
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject1\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject1\bin\Debug\UnityEngine.dll
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject1\bin\Debug\Assembly-CSharp.pdb
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject1\bin\Debug\UnityEngine.xml
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject1\obj\Debug\UnitTestProject1.dll
+C:\Users\ReddRapter\Documents\Unity\Legends\UnitTestProject1\obj\Debug\UnitTestProject1.pdb
