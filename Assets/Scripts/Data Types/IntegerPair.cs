@@ -48,6 +48,17 @@
         }
     }
 
+    public int horizontal
+    {
+        get { return intX; }
+        set { intX = value; }
+    }
+
+    public int vertical
+    {
+        get { return intY; }
+        set { intY = value; }
+    }
 
     public IntegerPair(int x, int y)
     {

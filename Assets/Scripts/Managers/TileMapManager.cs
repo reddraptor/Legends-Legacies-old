@@ -2,6 +2,7 @@
 using Assets.Scripts.Data_Types;
 using System.Collections;
 using Assets.Scripts.Components;
+using System;
 
 [RequireComponent(typeof(MovementManager))]
 public class TileMapManager : MonoBehaviour
@@ -15,17 +16,15 @@ public class TileMapManager : MonoBehaviour
     public float scrollSpeed = 10;
     public float originX = 0;
     public float originY = 0;
-    public float originZ = -10;
 
     /* PRIVATE FIELDS */
     Vector2 lastOrthoSize;
     IntegerPair viewableTileDimensions;
-    Coordinates focusCoords;
     IntegerPair focusIndices;
     Coordinates lowerLeft;
     Coordinates upperRight;
     WorldManager worldManager;
-    MovementManager moveManager;
+    MovementManager movementManager;
     EntityManager entityManager;
     GameManager gameManager;
     Vector3 origin;
@@ -38,9 +37,10 @@ public class TileMapManager : MonoBehaviour
         get { return tileMap.GetComponent<Movement>().isMoving; }
     }
 
-    public Coordinates FocusCoordinates
+    public Coordinates focus
     {
-        get { return focusCoords; }
+        get { return tileMap.GetComponent<Entity>().coordinates; }
+        set { ChangeFocus(value); }
     }
 
     /* UNITY MESSAGES */
@@ -50,9 +50,9 @@ public class TileMapManager : MonoBehaviour
         lastOrthoSize = new Vector2();
         viewableTileDimensions = new IntegerPair();
         focusIndices = new IntegerPair();
-        origin = new Vector3(originX, originY, originZ);
+        origin = new Vector2(originX, originY);
         worldManager = GetComponent<WorldManager>();
-        moveManager = GetComponent<MovementManager>();
+        movementManager = GetComponent<MovementManager>();
         gameManager = GetComponent<GameManager>();
         entityManager = GetComponent<EntityManager>();
     }
@@ -61,6 +61,7 @@ public class TileMapManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        tileMap.transform.position = origin;
         UpdateDimensions();
         ChangeFocus(worldManager.world.playerSpawnLocation);
         InstanceTiles();
@@ -122,7 +123,7 @@ public class TileMapManager : MonoBehaviour
                 position.x = tileMap.transform.position.x - viewableTileDimensions.i / 2 + i;
                 position.y = tileMap.transform.position.x - viewableTileDimensions.j / 2 + j;
 
-                tileInstance = Instantiate(worldManager.GetTerrainTile(GetCoordinatesAtIndices(new IntegerPair(i, j))), position, Quaternion.identity);
+                tileInstance = Instantiate(worldManager.GetTerrainTile(GetCoordinates(new IntegerPair(i, j))), position, Quaternion.identity);
                 tileInstance.transform.SetParent(tileMap.transform);
                 tileMap.tileArray[i, j] = tileInstance;
             }
@@ -166,14 +167,14 @@ public class TileMapManager : MonoBehaviour
     /// <summary>
     /// Returns world map coordinates from given tile position in camera view, with position (0,0) being lower left corner
     /// </summary>
-    /// <param name="indices">Tile position in camera view of type Integer Pair</param>
+    /// <param name="tileArrayIndices">Tile position in camera view of type Integer Pair</param>
     /// <returns>Location holding world map location</returns>
-    public Coordinates GetCoordinatesAtIndices(IntegerPair indices)
+    public Coordinates GetCoordinates(IntegerPair tileArrayIndices)
     {
         Coordinates.World_Coordinates worldLocation = new Coordinates.World_Coordinates();
 
-        worldLocation.X = indices.i - focusIndices.i + focusCoords.World.X;
-        worldLocation.Y = indices.j - focusIndices.j + focusCoords.World.Y;
+        worldLocation.X = tileArrayIndices.i - focusIndices.i + focus.World.X;
+        worldLocation.Y = tileArrayIndices.j - focusIndices.j + focus.World.Y;
 
         return new Coordinates(worldLocation);
     }
@@ -190,10 +191,10 @@ public class TileMapManager : MonoBehaviour
         if (!mapMovement.isMoving)
         {
 
-            ChangeFocus(new Coordinates(focusCoords.World.X + horizontal, focusCoords.World.Y + vertical));
+            ChangeFocus(new Coordinates(focus.World.X + horizontal, focus.World.Y + vertical));
 
-            moveManager.Add(mapMovement, -horizontal, -vertical, speed);
-            entityManager.SetMoveAll(-horizontal, -vertical, speed);
+            movementManager.Add(mapMovement, -horizontal, -vertical, speed);
+            movementManager.MoveEntities(-horizontal, -vertical, speed);
         }
     }
 
@@ -201,27 +202,26 @@ public class TileMapManager : MonoBehaviour
     /// <summary>
     /// Changes the focus of the center of the view on to a different map location. If new chunks needed to be loaded, it will call for it.
     /// </summary>
-    /// <param name="location"></param>
-    public void ChangeFocus(Coordinates location)
+    /// <param name="coordinates"></param>
+    void ChangeFocus(Coordinates coordinates)
     {
         // define the bounds of the map that will be in the view
-        lowerLeft = new Coordinates(location.World.X - (viewableTileDimensions.x - 1) / 2, (location.World.Y - (viewableTileDimensions.y - 1) / 2));
-        upperRight = new Coordinates(location.World.X + (viewableTileDimensions.x - 1) / 2, (location.World.Y + (viewableTileDimensions.x - 1) / 2));
+        lowerLeft = new Coordinates(coordinates.World.X - (viewableTileDimensions.x - 1) / 2, (coordinates.World.Y - (viewableTileDimensions.y - 1) / 2));
+        upperRight = new Coordinates(coordinates.World.X + (viewableTileDimensions.x - 1) / 2, (coordinates.World.Y + (viewableTileDimensions.x - 1) / 2));
 
         // if any part of the view is outside current loaded chunk distance load new chunks
         if (!worldManager.LoadedChunksContain(lowerLeft, upperRight))
         {
-            worldManager.LoadChunksAt(location);
+            worldManager.LoadChunksAt(coordinates);
         }
-        focusCoords = location;
-        Debug.Log("Focus Location: " + focusCoords.World.X + " " + focusCoords.World.Y);
+        tileMap.GetComponent<Entity>().coordinates = coordinates;
     }
 
     public Vector3 GetScreenPositionAt(Coordinates coordinates)
     {
         Vector3 position = new Vector3();
-        position.x = (coordinates.World.X - focusCoords.World.X);
-        position.y = (coordinates.World.Y - focusCoords.World.Y);
+        position.x = (coordinates.World.X - focus.World.X);
+        position.y = (coordinates.World.Y - focus.World.Y);
         return position;
     }
 

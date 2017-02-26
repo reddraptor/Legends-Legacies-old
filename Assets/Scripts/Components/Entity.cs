@@ -8,7 +8,6 @@ namespace Assets.Scripts.Components
     public class Entity : MonoBehaviour
     {
         /* INSPECTOR FIELDS */
-        public EntityManager entityManager;
 
         /* PUBLIC FIELDS */
         public Coordinates coordinates = new Coordinates(0, 0);
@@ -18,10 +17,6 @@ namespace Assets.Scripts.Components
         /* PRIVATE FIELDS */
 
         EntityType entityType = EntityType.Undefined;
-
-
-        //Coordinates coords = new Coordinates(0, 0);
-
 
         /* PROPERTIES */
 
@@ -34,20 +29,12 @@ namespace Assets.Scripts.Components
                     entityType = value;
             }
         }
+
+        public int instanceId
+        {
+            get { return GetInstanceID(); }
+        }
         
-        //public Coordinates coordinates
-        //{
-        //    get { return coords; }
-        //    set
-        //    {
-        //        if (entityType == EntityType.Player)
-        //        {
-        //            entityManager.players.Remove(coords);
-        //            entityManager.players[value] = this;
-        //            coords = value;
-        //        }
-        //    }
-        //}
 
         public bool IsCentered
         {

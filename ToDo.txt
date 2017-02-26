@@ -26,8 +26,12 @@ Change Serialization Implementation
 Early enemy implementation
 -spawning and map scrolling DONE
 -behaviors
+-- movement DONE
+-- herd behavior test
+-- combat
 -spawning and unspawning with chunk load/unload
 attributes
+-- component
 UI widgets
 combat system
 

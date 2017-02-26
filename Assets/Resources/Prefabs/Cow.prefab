@@ -24,9 +24,10 @@ GameObject:
   - component: {fileID: 114384235699136460}
   - component: {fileID: 114220090026633026}
   - component: {fileID: 114367862418007120}
+  - component: {fileID: 114895732011450958}
   m_Layer: 0
   m_Name: Cow
-  m_TagString: Player
+  m_TagString: Mob
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -75,7 +76,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bddfc895ab8bca44baf695c568e0f05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityManager: {fileID: 0}
   placed: 0
 --- !u!114 &114367862418007120
 MonoBehaviour:
@@ -88,7 +88,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1df6822c39a637d40b7219d108c23905, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: cow
+  speed: 5
 --- !u!114 &114384235699136460
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -100,8 +100,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fea50b0ebc6e19043ba657ec0b973122, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  magnitude: 2
+  horizontal: 0
+  vertical: 0
   isMoving: 0
+--- !u!114 &114895732011450958
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1917203195682194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ab5bd07abee6594dba0a6337faf3442, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idlePrefab: {fileID: 11400000, guid: 098c516048e12c544a931c6362fb01e1, type: 2}
 --- !u!212 &212667873856302458
 SpriteRenderer:
   m_ObjectHideFlags: 1

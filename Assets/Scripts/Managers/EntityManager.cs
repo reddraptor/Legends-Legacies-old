@@ -7,25 +7,37 @@ using System.Collections;
 
 public class EntityManager : MonoBehaviour
 {
-    /* EDITOR FIELDS */
+    /* INSPECTOR FIELDS */
     public GameObject[] prefabs;
 
     /* PUBLIC ENUMERATORS */
-    public enum EntityType : byte { Undefined, Player, Mob, Npc, Terrain, Prop }
+    public enum EntityType : byte { Undefined, Map, Player, Mob, Npc, Terrain, Prop }
 
-    /* PUBLIC FIELDS */
-    public Dictionary<Coordinates, Entity> players;
-    public Dictionary<Coordinates, Entity> mobs;
-    //static public Dictionary<Coordinates, Location> npcs;
-    //static public Dictionary<Coordinates, Location> newTerrain;
-    //static public Dictionary<Coordinates, Location> props;
+    /* PUBLIC PROPERTIES */
+    public Dictionary<Coordinates, Entity>.ValueCollection playerCollection
+    {
+        get { return players.Values; }
+    }
+
+    public Dictionary<Coordinates, Entity>.ValueCollection mobCollection
+    {
+        get { return mobs.Values; }
+    }
+
     //...
-
 
     /* PRIVATE FIELDS */
     Dictionary<string, GameObject> prefabDictionary;
     TileMapManager tileMapManager;
     MovementManager movementManager;
+
+    Dictionary<Coordinates, Entity> players;
+    Dictionary<Coordinates, Entity> mobs;
+    //static public Dictionary<Coordinates, Location> npcs;
+    //static public Dictionary<Coordinates, Location> newTerrain;
+    //static public Dictionary<Coordinates, Location> props;
+    //...
+
 
     /*UNITY MESSAGES */
     // Use this for initialization
@@ -57,11 +69,13 @@ public class EntityManager : MonoBehaviour
 
     /* METHODS */
     /// <summary>
-    /// Creates instance of a prefab with a given name, at the given coordinates on the map and adds it to world data
+    /// Creates instance of a prefab with a given name, at the given coordinates on the map and adds it to
+    /// the approbriate entity dictionary
     /// </summary>
     /// <param name="name">Prefab name</param>
     /// <param name="coordinates">Map coordinates</param>
-    /// <returns>A game object with the Entity component that is an instance of a prefab.</returns>
+    /// <returns>The entity component of new gameobject instance. If the prefab has no entity component or
+    /// entity can not be placed at those coordinates, null is returned.</returns>
     public Entity Spawn(string name, Coordinates coordinates)
     {
         GameObject prefab = prefabDictionary[name];
@@ -71,7 +85,6 @@ public class EntityManager : MonoBehaviour
         Entity entity = gOEntity.GetComponent<Entity>();
         if (entity)
         {
-            entity.entityManager = this;
             if (!Place(entity, coordinates))
             {
                 Destroy(entity.gameObject);
@@ -82,6 +95,10 @@ public class EntityManager : MonoBehaviour
         else return null;
     }
 
+    /// <summary>
+    /// Removes entity from data. Destroys gameobject entity is attached to.
+    /// </summary>
+    /// <param name="entity">An entity component</param>
     public void Despawn(Entity entity)
     {
         if (entity.type == EntityType.Player)
@@ -97,6 +114,9 @@ public class EntityManager : MonoBehaviour
         Destroy(entity.gameObject);
     }
 
+    /// <summary>
+    /// All entity data is cleared and attached gameobjects destroyed. Typically called when one game session ends before another begins.
+    /// </summary>
     public void DespawnAll()
     {
         foreach (Entity entity in players.Values)
@@ -114,6 +134,12 @@ public class EntityManager : MonoBehaviour
         // ... other entity types
     }
 
+    /// <summary>
+    /// Checks if coordinates is occupied by an entity type, or another type that can not share the same tile as the entity type.
+    /// </summary>
+    /// <param name="coordinates">Map coordinates</param>
+    /// <param name="entityType">An entity type</param>
+    /// <returns>True if occupied, else false.</returns>
     public bool IsOccupied(Coordinates coordinates, EntityType entityType)
     {
         if (entityType == EntityType.Player || entityType == EntityType.Mob) //Mobs and Players can't share the same space
@@ -125,6 +151,12 @@ public class EntityManager : MonoBehaviour
         else throw new System.ArgumentException("IsFree(Coordinates, Entity.Entity_Type): Given entity type undefined.");
     }
 
+    /// <summary>
+    /// Attempts to place an entity at given coordinates. 
+    /// </summary>
+    /// <param name="entity">An entity component</param>
+    /// <param name="coordinates">Map Coordinates</param>
+    /// <returns>True if successful, false if entity is null, or coordinates are occupied.</returns>
     public bool Place(Entity entity, Coordinates coordinates)
     {
         if (!entity) return false;
@@ -143,19 +175,39 @@ public class EntityManager : MonoBehaviour
             }
             entity.coordinates = coordinates;
             entity.placed = true;
+            Debug.Log("Placed: " + entity.name + ", " + entity.GetInstanceID() + ", " + entity.coordinates.World.X + " " + entity.coordinates.World.Y);
             return true;
         }
         else return false;
     }
 
-    public void Center(Entity entity)
+    /// <summary>
+    /// Moves camera focus with entity in the center.
+    /// </summary>
+    /// <param name="focusEntity">An entity component</param>
+    public void Center(Entity focusEntity)
     {
-        entity.transform.position = Vector3.zero;
+        tileMapManager.focus = focusEntity.coordinates;
 
-        tileMapManager.ChangeFocus(entity.coordinates);
+        foreach (Entity entity in players.Values)
+        {
+            entity.transform.position = tileMapManager.GetScreenPositionAt(entity.coordinates);
+        }
+        foreach (Entity entity in mobs.Values)
+        {
+            entity.transform.position = tileMapManager.GetScreenPositionAt(entity.coordinates);
+        }
+
+        // ...
+
         tileMapManager.Refresh();
     }
 
+    /// <summary>
+    /// Returns the client's player component
+    /// </summary>
+    /// <param name="name">Name of the entity</param>
+    /// <returns>Player component with given name</returns>
     public Player GetPlayer(string name)
     {
         Player player;
@@ -168,6 +220,12 @@ public class EntityManager : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// Moves all entities in given horizontal and vertical tile spaces at given speed. Typically called by tile map scroller.
+    /// </summary>
+    /// <param name="horizontal">horizontal vectorin tile spaces</param>
+    /// <param name="vertical">vertical vector in tile spaces</param>
+    /// <param name="speed">Speed to move entities</param>
     internal void SetMoveAll(int horizontal, int vertical, float speed)
     {
         foreach (Entity entity in mobs.Values)
@@ -175,4 +233,6 @@ public class EntityManager : MonoBehaviour
             movementManager.Add(entity.GetComponent<Movement>(), horizontal, vertical, speed);
         }
     }
+
+
 }

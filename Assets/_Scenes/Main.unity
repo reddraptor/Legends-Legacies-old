@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 87164915}
   - component: {fileID: 87164916}
   - component: {fileID: 87164913}
+  - component: {fileID: 87164917}
   m_Layer: 0
   m_Name: TileMap
   m_TagString: Untagged
@@ -164,8 +165,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fea50b0ebc6e19043ba657ec0b973122, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  magnitude: 2
+  horizontal: 0
+  vertical: 0
   isMoving: 0
+--- !u!114 &87164917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 87164912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bddfc895ab8bca44baf695c568e0f05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  placed: 0
 --- !u!1 &164426076
 GameObject:
   m_ObjectHideFlags: 0
@@ -406,6 +421,7 @@ GameObject:
   - component: {fileID: 1150027810}
   - component: {fileID: 1150027809}
   - component: {fileID: 1150027811}
+  - component: {fileID: 1150027812}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -441,6 +457,8 @@ MonoBehaviour:
   orthographicChangeAllowance: 0.001
   edgeTileBuffer: 1
   scrollSpeed: 10
+  originX: 0
+  originY: 0
 --- !u!114 &1150027805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -536,6 +554,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   saveFileFolder: WorldSaves
   saveFileExtension: .sav
+--- !u!114 &1150027812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1150027802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6ebb9fb37de5e64dae7122be8a1ad09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1228712654
 GameObject:
   m_ObjectHideFlags: 0

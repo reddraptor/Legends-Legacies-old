@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
             //Show the Map
             if (tileMapManager)
             {
-                tileMapManager.ChangeFocus(new Coordinates(0, 0));
+                tileMapManager.focus = new Coordinates(0, 0);
                 tileMapManager.ShowMap(true);
             }
 
@@ -99,9 +99,9 @@ public class GameManager : MonoBehaviour
         {
             tileMapManager.ShowMap(true);
             if (player)
-                tileMapManager.ChangeFocus(player.coordinates);
+                tileMapManager.focus = player.coordinates;
             else
-                tileMapManager.ChangeFocus(new Coordinates(0, 0));
+                tileMapManager.focus = new Coordinates(0, 0);
             tileMapManager.ShowMap(true);
         }
 

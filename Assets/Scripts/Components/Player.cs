@@ -10,7 +10,7 @@ namespace Assets.Scripts.Components
     {
         /* EDITABLE FIELDS */
         public int sightRange = 32;
-        public string name = "Player One";
+        public float speed = 10;
 
         /* PROPERTIES */
         public Coordinates coordinates
@@ -35,6 +35,7 @@ namespace Assets.Scripts.Components
         // Awake is called when the script instance is being loaded
         private void Awake()
         {
+            name = "Player One";
             _entity = GetComponent<Entity>();
             _entity.type = EntityManager.EntityType.Player;
             _movement = GetComponent<Movement>();

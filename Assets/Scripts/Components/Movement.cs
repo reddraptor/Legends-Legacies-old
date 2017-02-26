@@ -23,7 +23,7 @@ namespace Assets.Scripts.Components
             get { return entity.coordinates; }
         }
 
-        public Rigidbody2D Rigidbody
+        public new Rigidbody2D rigidbody
         {
             get { return rb; }
         }

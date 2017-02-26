@@ -9,7 +9,8 @@ namespace Assets.Scripts.Components
 
     class Mob : MonoBehaviour
     {
-        public string name = "cow";
+
+        public float speed = 5;
 
         public Coordinates coordinates
         {
@@ -33,6 +34,7 @@ namespace Assets.Scripts.Components
         // Awake is called when the script instance is being loaded
         private void Awake()
         {
+            name = "cow";
             _entity = GetComponent<Entity>();
             _entity.type = EntityManager.EntityType.Mob;
             _movement = GetComponent<Movement>();

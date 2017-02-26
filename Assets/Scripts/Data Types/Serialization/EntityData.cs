@@ -15,7 +15,7 @@ namespace Assets.Scripts.Data_Types.Serialization
         public EntityData(EntityManager entityManager)
         {
             playerData = new List<PlayerData>();
-            foreach (Entity entity in entityManager.players.Values)
+            foreach (Entity entity in entityManager.playerCollection)
             {
                 if (entity.type == EntityManager.EntityType.Player)
                     playerData.Add( new PlayerData(entity) );

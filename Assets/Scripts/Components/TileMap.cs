@@ -27,6 +27,7 @@ namespace Assets.Scripts.Components
         void Awake()
         {
             tileArray = new GameObject[0, 0];
+            GetComponent<Entity>().type = EntityManager.EntityType.Map;
         }
 
     }

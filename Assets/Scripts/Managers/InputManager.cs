@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using Assets.Scripts.Data_Types;
+using Assets.Scripts.Managers;
+
 public class InputManager : MonoBehaviour
 {
     /* EDITOR FIELDS */
@@ -28,6 +30,7 @@ public class InputManager : MonoBehaviour
     EntityManager entityManager;
     WorldManager worldManager;
     MovementManager movementManager;
+    BehaviorManager behaviorManager;
 
 
     // Use this for initialization
@@ -39,6 +42,7 @@ public class InputManager : MonoBehaviour
         entityManager = GetComponent<EntityManager>();
         worldManager = GetComponent<WorldManager>();
         movementManager = GetComponent<MovementManager>();
+        behaviorManager = GetComponent<BehaviorManager>();
         mouseScrollReminder.GetComponent<Canvas>().enabled = false;
 
 
@@ -106,8 +110,9 @@ public class InputManager : MonoBehaviour
                         entityManager.Center(gameManager.player.entity);
                     }
 
-                    float speed = gameManager.player.movement.speed * worldManager.SpeedModifierAt(gameManager.player.coordinates);
+                    float speed = gameManager.player.speed * worldManager.SpeedModifierAt(gameManager.player.coordinates);
                     tileMapManager.Scroll(inputDirection.x, inputDirection.y, speed);
+                    behaviorManager.RunBehaviors();
                 }
             }
 
@@ -116,7 +121,7 @@ public class InputManager : MonoBehaviour
                 if ((mouseScrollDirection.x != 0 || mouseScrollDirection.y != 0))
                 {
                     // Ensure map doesn't scroll horizontally out of player's sight range.
-                    Coordinates newFocusHorizontal = new Coordinates(tileMapManager.FocusCoordinates.World.X + mouseScrollDirection.x, tileMapManager.FocusCoordinates.World.Y);
+                    Coordinates newFocusHorizontal = new Coordinates(tileMapManager.focus.World.X + mouseScrollDirection.x, tileMapManager.focus.World.Y);
                     if (mouseScrollDirection.x != 0
                         && gameManager.player.entity.coordinates.Range(newFocusHorizontal) > gameManager.player.sightRange - worldManager.MapGenerator.chunkTileWidth / 2)
                     {
@@ -124,7 +129,7 @@ public class InputManager : MonoBehaviour
                     }
 
                     // Ensure map doesn't scroll vertically out of player's sight range.
-                    Coordinates newFocusVertical = new Coordinates(tileMapManager.FocusCoordinates.World.X, tileMapManager.FocusCoordinates.World.Y + mouseScrollDirection.y);
+                    Coordinates newFocusVertical = new Coordinates(tileMapManager.focus.World.X, tileMapManager.focus.World.Y + mouseScrollDirection.y);
                     if (mouseScrollDirection.y != 0
                         && gameManager.player.entity.coordinates.Range(newFocusVertical) > gameManager.player.sightRange - worldManager.MapGenerator.chunkTileWidth / 2)
                     {
@@ -135,7 +140,7 @@ public class InputManager : MonoBehaviour
                     if (mouseScrollDirection.x == 0 && mouseScrollDirection.y == 0) return;
 
                     Coordinates newFocusLocation
-                        = new Coordinates(tileMapManager.FocusCoordinates.World.X + mouseScrollDirection.x, tileMapManager.FocusCoordinates.World.Y + mouseScrollDirection.y);
+                        = new Coordinates(tileMapManager.focus.World.X + mouseScrollDirection.x, tileMapManager.focus.World.Y + mouseScrollDirection.y);
 
                     // Ensure the scrolling of both directions would not be out of player's sight. Not sure if this is necessary?!?!
                     if (gameManager.player.entity.coordinates.Range(newFocusLocation) > gameManager.player.sightRange - worldManager.MapGenerator.chunkTileWidth / 2) return;
