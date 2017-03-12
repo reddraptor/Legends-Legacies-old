@@ -23,6 +23,11 @@ namespace Assets.Scripts.Components
             get { return GetComponent<Entity>(); }
         }
 
+        public Attributes attributes
+        {
+            get { return GetComponent<Attributes>(); }
+        }
+
         private void Awake()
         {
             iBehavior = Instantiate(idlePrefab);

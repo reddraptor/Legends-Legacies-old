@@ -11,12 +11,14 @@ namespace Assets.Scripts.Components
 
         /* PUBLIC FIELDS */
         public Coordinates coordinates = new Coordinates(0, 0);
+
         [HideInInspector] public bool placed = false;
+        public Chunk chunk = null;
         
 
         /* PRIVATE FIELDS */
 
-        EntityType entityType = EntityType.Undefined;
+        public EntityType entityType = EntityType.Undefined;
 
         /* PROPERTIES */
 

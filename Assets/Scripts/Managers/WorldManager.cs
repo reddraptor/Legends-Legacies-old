@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using Assets.Scripts.Data_Types;
 using Assets.Scripts.Components;
 using Assets.Scripts.ScriptableObjects;
+using System;
 
 public class WorldManager : MonoBehaviour
 {
@@ -10,39 +11,88 @@ public class WorldManager : MonoBehaviour
     public World world;
     public MapGenerator mapGenerator;
 
-    /* PRIVATE FIELDS */
+    public bool hasLoadedChunks
+    {
+        get { return world.loadedChunks.hasLoaded; }
+    }
 
+
+    /* PRIVATE FIELDS */
+    private int seed;
 
     /* PROPERTIES */
-
-    public MapGenerator MapGenerator
+    private bool newSeed
     {
-        get { return mapGenerator; }
+        get { return (world.seed != seed); }
+    }
+
+    internal EntityManager entityManager
+    {
+        get { return GetComponent<EntityManager>(); }
     }
 
     /* UNITY MESSAGES */
-    // Use this for initialization
-    void Start()
-    {
-    
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     /* METHODS */
 
-    public GameObject GetTerrainTile(Coordinates coordinates)
+    internal Chunk GetChunk(Coordinates coordinates)
     {
-        IntegerPair indices = new IntegerPair(
-            coordinates.Chunk.I - world.loadedChunks.lowerLeftCorner.Chunk.I,
-            coordinates.Chunk.J - world.loadedChunks.lowerLeftCorner.Chunk.J);
+        if (!LoadedChunksContainCoordinates(coordinates)) return null;
 
-        return world.loadedChunks.Chunks[indices.i, indices.j].tileArray[coordinates.Chunk.X, coordinates.Chunk.Y];
-        //throw new System.NotImplementedException();
+        IntegerPair indices = new IntegerPair(
+            (int)(coordinates.inChunks.x - world.loadedChunks.lowerLeft.inChunks.x),
+            (int)(coordinates.inChunks.y - world.loadedChunks.lowerLeft.inChunks.y)
+            );
+
+        return world.loadedChunks.chunkArray[indices.i, indices.j];
+    }
+
+    internal GameObject GetTilePrefab(Coordinates coordinates)
+    {
+        Chunk chunk = GetChunk(coordinates);
+        GameObject[,] tileArray;
+
+        if (chunk != null)
+        {
+            tileArray = chunk.tileArray;
+            if (tileArray != null)
+            {
+                return chunk.tileArray[coordinates.inChunks.i, coordinates.inChunks.j];
+            }
+        }
+
+        return null;
+
+    }
+
+    internal TerrainTile GetTerrainTile(Coordinates coordinates)
+    {
+        GameObject tileObject = GetTilePrefab(coordinates);
+
+        if (tileObject) return tileObject.GetComponent<TerrainTile>();
+
+        return null;
+    }
+
+    internal float GetSpeed(Coordinates coordinates, Attributes attributes, TerrainTile.TerrainType locomotion)
+    {
+
+        TerrainTile terrainTile = GetTerrainTile(coordinates);
+
+        if (terrainTile)
+        {
+            if (locomotion == TerrainTile.TerrainType.Air)
+                return attributes.flySpeed;
+            else if (locomotion == TerrainTile.TerrainType.Land)
+            {
+                return attributes.walkSpeed * terrainTile.speedModifier;
+            }
+            else if (locomotion == TerrainTile.TerrainType.Water)
+            {
+                return attributes.swimSpeed * terrainTile.speedModifier;
+            }
+        }
+        return 0f;
     }
 
     /// <summary>
@@ -51,19 +101,24 @@ public class WorldManager : MonoBehaviour
     /// <param name="lowerLeft">Coordinates of the lower left corner of the area.</param>
     /// <param name="upperRight">Coordinates of the upper right corner of the area.</param>
     /// <returns>Returns true if area is contained, false otherwise.</returns>
-    public bool LoadedChunksContain(Coordinates lowerLeft, Coordinates upperRight)
+    internal bool LoadedChunksContainArea(Coordinates lowerLeft, Coordinates upperRight)
     {
         if (world.loadedChunks == null) return false;
-        if (lowerLeft.Chunk.I < world.loadedChunks.lowerLeftCorner.Chunk.I)
+        if (lowerLeft.inChunks.x < world.loadedChunks.lowerLeft.inChunks.x)
             return false;
-        else if (lowerLeft.Chunk.J < world.loadedChunks.lowerLeftCorner.Chunk.J)
+        else if (lowerLeft.inChunks.y < world.loadedChunks.lowerLeft.inChunks.y)
             return false;
-        else if (upperRight.Chunk.I >= world.loadedChunks.lowerLeftCorner.Chunk.I + (world.loadedChunkWidth))
+        else if (upperRight.inChunks.x >= world.loadedChunks.lowerLeft.inChunks.x + world.loadedChunkWidth)
             return false;
-        else if (upperRight.Chunk.J >= world.loadedChunks.lowerLeftCorner.Chunk.J + (world.loadedChunkWidth))
+        else if (upperRight.inChunks.y >= world.loadedChunks.lowerLeft.inChunks.y + world.loadedChunkWidth)
             return false;
         else
             return true;
+    }
+
+    internal bool LoadedChunksContainCoordinates(Coordinates coordinates)
+    {
+        return LoadedChunksContainArea(coordinates, coordinates);
     }
 
     /// <summary>
@@ -71,49 +126,93 @@ public class WorldManager : MonoBehaviour
     /// procedual generation code with changes recorded in a list of locations.
     /// </summary>
     /// <param name="center"></param>
-    public void LoadChunksAt(Coordinates center)
+    internal void LoadChunksAt(Coordinates center)
     {
-        world.loadedChunks.lowerLeftCorner = new Coordinates(
-            center.Chunk.I - world.loadedChunkDistance,
-            center.Chunk.J - world.loadedChunkDistance, 0, 0);
+        Chunk[,] chunkArray = new Chunk[world.loadedChunkWidth, world.loadedChunkWidth];
+        HashSet<Chunk> chunkSet = new HashSet<Chunk>();
+
+        Coordinates loadedLowerLeft = new Coordinates(
+            center.inChunks.x - world.loadedChunkDistance,
+            center.inChunks.y - world.loadedChunkDistance, 0, 0);
+
+        IntegerPair offset = new IntegerPair(
+                (int)(loadedLowerLeft.inChunks.x - world.loadedChunks.lowerLeft.inChunks.x),
+                (int)(loadedLowerLeft.inChunks.y - world.loadedChunks.lowerLeft.inChunks.y)
+                );
 
         for (int i = 0; i < world.loadedChunkWidth; i++)
         {
-            for (int j = 0; j < world.loadedChunkWidth; j++)
+            for (int j = 0; j < world.loadedChunkWidth; j++) 
             {
-                //IntegerPair currentIndices = new IntegerPair(i, j);
-                world.loadedChunks.Chunks[i, j] = new Chunk(MapGenerator.GenerateTileArray(
-                    new Coordinates.Chunk_Coordinates(
-                        world.loadedChunks.lowerLeftCorner.Chunk.I + i,
-                        world.loadedChunks.lowerLeftCorner.Chunk.J + j,
-                        0,0),
-                    world.seed));
+                Coordinates chunkLowerLeft = new Coordinates(loadedLowerLeft.inChunks.x + i, loadedLowerLeft.inChunks.y + j, 0, 0);
+
+                // If this chunk's coordinates are already contained in loaded chunks and still the same world seed,
+                // copy it over to the new chunk array in it's new position.
+                if ( LoadedChunksContainCoordinates(chunkLowerLeft) && !newSeed )
+                {
+                    // if (world.loadedChunks.chunkArray[i + offset.i, j + offset.j] != null) // Think I meant the following check:
+                    if (world.loadedChunks.chunkArray != null)
+                        chunkArray[i, j] = world.loadedChunks.chunkArray[i + offset.i, j + offset.j];
+                    else
+                        chunkArray[i, j] = LoadChunk(chunkLowerLeft);
+                }
+
+                // Else load the new chunk
+                else
+                    chunkArray[i, j] = LoadChunk(chunkLowerLeft);
 
                 // Connect our chunks with references to the adjacent chunks for easy navigation
                 if (i > 0) // Not in the first column
                 {
-                    world.loadedChunks.Chunks[i, j].south = world.loadedChunks.Chunks[i - 1, j]; // chunk in the column to left
-                    world.loadedChunks.Chunks[i - 1, j].north = world.loadedChunks.Chunks[i, j];
+                    chunkArray[i, j].south = chunkArray[i - 1, j]; // chunk in the column to left
+                    chunkArray[i - 1, j].north = chunkArray[i, j];
                 }
                 if (j > 0) // Not in the bottom row
                 {
-                    world.loadedChunks.Chunks[i, j].west = world.loadedChunks.Chunks[i, j - 1]; // chunk in the row below
-                    world.loadedChunks.Chunks[i, j - 1].east = world.loadedChunks.Chunks[i, j];
+                    chunkArray[i, j].west = chunkArray[i, j - 1]; // chunk in the row below
+                    chunkArray[i, j - 1].east = chunkArray[i, j];
+                }
+
+                chunkSet.Add(chunkArray[i, j]);
+            }
+        }
+        
+        // Unload all chunks not included in new chunk set
+        for (int i = 0; i < world.loadedChunkWidth; i++)
+        {
+            for (int j = 0; j < world.loadedChunkWidth; j++)
+            {
+                if (!chunkSet.Contains(world.loadedChunks.chunkArray[i, j]))
+                {
+                    UnloadChunk(world.loadedChunks.chunkArray[i, j]);
                 }
             }
         }
+
+        // Set the world's loadedchunks to the new chunks
+        world.loadedChunks.lowerLeft = loadedLowerLeft;
+        world.loadedChunks.chunkArray = chunkArray;
+        world.loadedChunks.chunkSet = chunkSet;
+        world.loadedChunks.hasLoaded = true;
+        seed = world.seed;
     }
 
-    public Coordinates GetCoordinatesAtIndices(IntegerPair indices)
+    internal Chunk LoadChunk(Coordinates chunkLowerLeft)
     {
-        return new Coordinates(world.loadedChunks.lowerLeftCorner.Chunk.I + indices.i, world.loadedChunks.lowerLeftCorner.Chunk.J + indices.j, 0, 0);
+        //Debug.Log("Loading chunk " + chunkLowerLeft.chunkCoord.i + " " + chunkLowerLeft.chunkCoord.j + "...");
+        Chunk chunk = new Chunk(mapGenerator.GenerateTileArray(chunkLowerLeft.inChunks, world.seed));
+        chunk.lowerLeft = chunkLowerLeft;
+        entityManager.Populate(chunk);
+        return chunk;
     }
 
-    public float SpeedModifierAt(Coordinates coordinates)
+    internal void UnloadChunk(Chunk chunk)
     {
-        return GetTerrainTile(coordinates).GetComponent<TerrainTile>().speedModifier;
+        entityManager.Depopulate(chunk);
     }
 
-
-
+    //internal Coordinates GetCoordinatesAtIndices(IntegerPair indices)
+    //{
+    //    return new Coordinates(world.loadedChunks.lowerLeft.chunk.i + indices.i, world.loadedChunks.lowerLeft.chunk.j + indices.j, 0, 0);
+    //}
 }

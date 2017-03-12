@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Assets.Scripts.Data_Types;
-using LocalChunkCoordinates = Assets.Scripts.Data_Types.Coordinates.Chunk_Coordinates;
+using LocalChunkCoordinates = Assets.Scripts.Data_Types.Coordinates.ChunkCoordinates;
 
 [CreateAssetMenu(menuName = "LegendsLegacies/Map Generator")]
 public class MapGenerator : ScriptableObject
@@ -29,7 +29,7 @@ public class MapGenerator : ScriptableObject
     }
 
     /* METHODS */
-    public GameObject[,] GenerateTileArray(Coordinates.Chunk_Coordinates chunkCoordinates, int seed)
+    public GameObject[,] GenerateTileArray(Coordinates.ChunkCoordinates chunkCoordinates, int seed)
     {
         GameObject[,] chunkMap = new GameObject[chunkTileWidth, chunkTileWidth];
         // Initializer the generators with the given seed so that each chunk has a unique generator
@@ -43,7 +43,6 @@ public class MapGenerator : ScriptableObject
                 chunkMap[i, j] = mapGenerationData.grassTilePrefab;
             }
         }
-        Debug.Log("Generatiing Chunk " + chunkCoordinates.I + " " + chunkCoordinates.J);
 
         // generate elevation maps for given chunk and adjacent chunks
         GenerateElevationMap();
@@ -83,13 +82,13 @@ public class MapGenerator : ScriptableObject
     /// Initializes a random number generator for each local chunk. Each chunk had it's own seed based on the world seed and it's own chunk location.
     /// </summary>
     /// <param name="chunkLocation"></param>
-    void InitGenerators(Coordinates.Chunk_Coordinates chunkLocation, int seed)
+    void InitGenerators(Coordinates.ChunkCoordinates chunkLocation, int seed)
     {
         for (int i = 0; i < generatorMatrix.GetLength(0); i++)
         {
             for (int j = 0; j < generatorMatrix.GetLength(1); j++)
             {
-                int chunkSeed = seed + chunkLocation.I - 1 + i + Mathf.RoundToInt(Mathf.Pow(chunkLocation.J - 1 + j, 2));
+                int chunkSeed = (int)(seed + chunkLocation.x - 1 + i + Mathf.RoundToInt(Mathf.Pow(chunkLocation.y - 1 + j, 2)));
                 generatorMatrix[i, j] = new System.Random(chunkSeed);
             }
         }
@@ -657,13 +656,13 @@ public class MapGenerator : ScriptableObject
 
     bool OnChunkEdge(LocalChunkCoordinates localCoordinates, Direction direction)
     {
-        if (localCoordinates.X == 0 && direction == Direction.West)
+        if (localCoordinates.i == 0 && direction == Direction.West)
             return true;
-        else if (localCoordinates.X == chunkTileWidth - 1 && direction == Direction.East)
+        else if (localCoordinates.i == chunkTileWidth - 1 && direction == Direction.East)
             return true;
-        else if (localCoordinates.Y == 0 && direction == Direction.South)
+        else if (localCoordinates.j == 0 && direction == Direction.South)
             return true;
-        else if (localCoordinates.Y == chunkTileWidth - 1 && direction == Direction.North)
+        else if (localCoordinates.j == chunkTileWidth - 1 && direction == Direction.North)
             return true;
         else return false;
 

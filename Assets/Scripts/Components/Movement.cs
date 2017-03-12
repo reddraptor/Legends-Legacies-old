@@ -7,17 +7,22 @@ namespace Assets.Scripts.Components
     public class Movement : MonoBehaviour
     {
         /* EDITOR FIELDS */
-        //public float speed = 2;
-        public float speed = 2f;
+        public float speed = 0f;
         public int horizontal = 0;
         public int vertical = 0;
         public bool isMoving = false;
         
+
+        public Entity entity
+        {
+            get { return GetComponent<Entity>(); }
+        }
+
         /* PRIVATE FIELDS */
         Rigidbody2D rb;
-        Entity entity;
+        
 
-
+        
         public Coordinates coordinates
         {
             get { return entity.coordinates; }
@@ -38,7 +43,6 @@ namespace Assets.Scripts.Components
         // Use this for initialization
         void Start()
         {
-            entity = GetComponent<Entity>();
         }
 
         // Update is called once per frame

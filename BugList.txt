@@ -9,13 +9,22 @@ Loading from a save game with the same world as the currently loaded game, does 
 
 Input Control
 -------------
+mousescrolling doesn't work anymore
 
-Game Load
+Game Saves
 ---------
+Doesn't save mob positions or attributes yet
 
 Chuck Loading
 -------------
+Chunks only load when on very edge of loaded chunks rather then within chunkwidth from camera focus FIXED
+
 
 Mob Behavior
 ------------
 Movement could be more smoother. Mobs often make behaviorial moves before scrolling back to position rather then combining screen movement.
+Mobs that are spawned at the same time all move as one. FIXED
+
+Movement
+--------
+Changing home terrain to air or water not having any effect on speed

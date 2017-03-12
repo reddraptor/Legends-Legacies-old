@@ -6,8 +6,8 @@ namespace Assets.Scripts.Data_Types.Serialization
     class PlayerData
     {
         public string name;
-        public int coordX;
-        public int coordY;
+        public long coordX;
+        public long coordY;
         public int sightRange;
 
         public PlayerData (Entity entity)
@@ -16,19 +16,19 @@ namespace Assets.Scripts.Data_Types.Serialization
             if (player)
             {
                 name = player.name;
-                sightRange = player.sightRange;
-                coordX = entity.coordinates.World.X;
-                coordY = entity.coordinates.World.Y;
+                sightRange = player.attributes.sightRange;
+                coordX = entity.coordinates.inWorld.x;
+                coordY = entity.coordinates.inWorld.y;
             }
         }
-
+         
         public void SetData(Entity entity)
         {
             Player player = entity.GetComponent<Player>();
             if (player)
             {
                 entity.coordinates = new Coordinates(coordX, coordY);
-                player.sightRange = sightRange;
+                //player.attributes.sightRange = sightRange;
                 player.name = name;
             }
         }

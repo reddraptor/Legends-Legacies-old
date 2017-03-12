@@ -14,19 +14,26 @@ public class EntityManager : MonoBehaviour
     public enum EntityType : byte { Undefined, Map, Player, Mob, Npc, Terrain, Prop }
 
     /* PUBLIC PROPERTIES */
-    public Dictionary<Coordinates, Entity>.ValueCollection playerCollection
+    internal Dictionary<Coordinates, Entity>.ValueCollection playerCollection
     {
         get { return players.Values; }
     }
 
-    public Dictionary<Coordinates, Entity>.ValueCollection mobCollection
+    internal Dictionary<Coordinates, Entity>.ValueCollection mobCollection
     {
         get { return mobs.Values; }
     }
 
     //...
 
+    internal WorldManager worldManager
+    {
+        get { return GetComponent<WorldManager>(); }
+    }
+
+
     /* PRIVATE FIELDS */
+    System.Random random = new System.Random();
     Dictionary<string, GameObject> prefabDictionary;
     TileMapManager tileMapManager;
     MovementManager movementManager;
@@ -40,18 +47,17 @@ public class EntityManager : MonoBehaviour
 
 
     /*UNITY MESSAGES */
-    // Use this for initialization
-    void Start()
-    {
-        tileMapManager = GetComponent<TileMapManager>();
-        movementManager = GetComponent<MovementManager>();
 
+    private void Awake()
+    {
         //Load prefabs into dictionary for easy retrieval by name
         prefabDictionary = new Dictionary<string, GameObject>();
         foreach (GameObject prefab in prefabs)
         {
             prefabDictionary.Add(prefab.name, prefab);
         }
+        tileMapManager = GetComponent<TileMapManager>();
+        movementManager = GetComponent<MovementManager>();
 
         players = new Dictionary<Coordinates, Entity>();
         mobs = new Dictionary<Coordinates, Entity>();
@@ -59,12 +65,12 @@ public class EntityManager : MonoBehaviour
         //newTerrain = new Dictionary<Coordinates, Entity>();
         //props = new Dictionary<Coordinates, Entity>();
         //...
+
     }
 
-    // Update is called once per frame
-    void Update()
+    // Use this for initialization
+    void Start()
     {
-
     }
 
     /* METHODS */
@@ -76,8 +82,10 @@ public class EntityManager : MonoBehaviour
     /// <param name="coordinates">Map coordinates</param>
     /// <returns>The entity component of new gameobject instance. If the prefab has no entity component or
     /// entity can not be placed at those coordinates, null is returned.</returns>
-    public Entity Spawn(string name, Coordinates coordinates)
+    internal Entity Spawn(string name, Coordinates coordinates)
     {
+        //Debug.Log("Spawning " + name + "...");
+
         GameObject prefab = prefabDictionary[name];
         GameObject gOEntity;
 
@@ -99,7 +107,7 @@ public class EntityManager : MonoBehaviour
     /// Removes entity from data. Destroys gameobject entity is attached to.
     /// </summary>
     /// <param name="entity">An entity component</param>
-    public void Despawn(Entity entity)
+    internal void Despawn(Entity entity)
     {
         if (entity.type == EntityType.Player)
         {
@@ -111,23 +119,24 @@ public class EntityManager : MonoBehaviour
         }
         // ... else if other entity types
 
+        entity.chunk.entitySet.Remove(entity);
         Destroy(entity.gameObject);
     }
 
     /// <summary>
     /// All entity data is cleared and attached gameobjects destroyed. Typically called when one game session ends before another begins.
     /// </summary>
-    public void DespawnAll()
+    internal void CleanUpSpawns()
     {
         foreach (Entity entity in players.Values)
         {
-            Destroy(entity.gameObject);
+            Despawn(entity);
         }
         players.Clear();
 
         foreach (Entity entity in mobs.Values)
         {
-            Destroy(entity.gameObject);
+            Despawn(entity);
         }
         mobs.Clear();
 
@@ -140,7 +149,7 @@ public class EntityManager : MonoBehaviour
     /// <param name="coordinates">Map coordinates</param>
     /// <param name="entityType">An entity type</param>
     /// <returns>True if occupied, else false.</returns>
-    public bool IsOccupied(Coordinates coordinates, EntityType entityType)
+    internal bool IsOccupied(Coordinates coordinates, EntityType entityType)
     {
         if (entityType == EntityType.Player || entityType == EntityType.Mob) //Mobs and Players can't share the same space
         {
@@ -148,8 +157,45 @@ public class EntityManager : MonoBehaviour
             else if (mobs.ContainsKey(coordinates)) return true;
             else return false;
         }
-        else throw new System.ArgumentException("IsFree(Coordinates, Entity.Entity_Type): Given entity type undefined.");
+        else throw new ArgumentException("IsFree(Coordinates, Entity.Entity_Type): Given entity type undefined.");
     }
+
+    
+    internal void Populate(Chunk chunk)
+    {
+        if (chunk == null) return;
+
+        int population = random.Next(10);
+
+        for (int i = 0; i < population; i++)
+        {
+            int randomX = random.Next(Chunk.chunkTileWidth);
+            int randomY = random.Next(Chunk.chunkTileWidth);
+
+            Entity entity = Spawn("Cow", new Coordinates(chunk.lowerLeft.inWorld.x + randomX, chunk.lowerLeft.inWorld.y + randomY));
+        }
+
+        // START DEBUG CODE
+        //if (mobCollection.Count == 0)
+        //{
+        //    Spawn("Cow", new Coordinates(chunk.lowerLeft.inWorld.x + randomX, chunk.lowerLeft.inWorld.y + randomY));
+        //}
+        // END DEBUG CODE
+    }
+
+    internal void Depopulate(Chunk chunk)
+    {
+        if (chunk == null) return;
+
+        Entity[] entityArray = new Entity[chunk.entitySet.Count];
+
+        chunk.entitySet.CopyTo(entityArray); // Since Despawn(Entity) modifies chunk.entitySet, have to iterate over a copy of the set
+        foreach (Entity entity in entityArray)
+        {
+            Despawn(entity);
+        }
+    }
+    
 
     /// <summary>
     /// Attempts to place an entity at given coordinates. 
@@ -157,10 +203,10 @@ public class EntityManager : MonoBehaviour
     /// <param name="entity">An entity component</param>
     /// <param name="coordinates">Map Coordinates</param>
     /// <returns>True if successful, false if entity is null, or coordinates are occupied.</returns>
-    public bool Place(Entity entity, Coordinates coordinates)
+    internal bool Place(Entity entity, Coordinates coordinates)
     {
         if (!entity) return false;
-
+        
         if (!IsOccupied(coordinates, entity.type))
         {
             if (entity.type == EntityType.Player)
@@ -173,9 +219,20 @@ public class EntityManager : MonoBehaviour
                 if (entity.placed) mobs.Remove(entity.coordinates);
                 mobs.Add(coordinates, entity);
             }
+
             entity.coordinates = coordinates;
+
+            Chunk chunk = worldManager.GetChunk(coordinates);
+
+            if (entity.chunk != chunk && chunk != null)
+            {
+                if (entity.chunk != null) entity.chunk.entitySet.Remove(entity);
+                entity.chunk = chunk;
+                chunk.entitySet.Add(entity);
+            }
+
             entity.placed = true;
-            Debug.Log("Placed: " + entity.name + ", " + entity.GetInstanceID() + ", " + entity.coordinates.World.X + " " + entity.coordinates.World.Y);
+ 
             return true;
         }
         else return false;
@@ -185,7 +242,7 @@ public class EntityManager : MonoBehaviour
     /// Moves camera focus with entity in the center.
     /// </summary>
     /// <param name="focusEntity">An entity component</param>
-    public void Center(Entity focusEntity)
+    internal void Center(Entity focusEntity)
     {
         tileMapManager.focus = focusEntity.coordinates;
 
@@ -208,7 +265,7 @@ public class EntityManager : MonoBehaviour
     /// </summary>
     /// <param name="name">Name of the entity</param>
     /// <returns>Player component with given name</returns>
-    public Player GetPlayer(string name)
+    internal Player GetPlayer(string name)
     {
         Player player;
 
@@ -233,6 +290,4 @@ public class EntityManager : MonoBehaviour
             movementManager.Add(entity.GetComponent<Movement>(), horizontal, vertical, speed);
         }
     }
-
-
 }

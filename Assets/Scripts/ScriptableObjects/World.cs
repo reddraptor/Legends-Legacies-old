@@ -11,7 +11,7 @@ namespace Assets.Scripts.ScriptableObjects
         public int seed = 07271975;
         public MapGenData mapGenerationData;
         public int loadedChunkDistance = 3;
-        public int playerSpawnLocationX = 0, playerSpawnLocationY = 0;
+        public long playerSpawnLocationX = 0, playerSpawnLocationY = 0;
 
         /* PRIVATE FIELDS */
 
@@ -24,10 +24,10 @@ namespace Assets.Scripts.ScriptableObjects
             get { return loadedChunkDistance * 2 + 1; }
         }
 
-        public Coordinates playerSpawnLocation
+        public Coordinates playerSpawnCoordinates
         {
             get { return new Coordinates(playerSpawnLocationX, playerSpawnLocationY); }
-            set { playerSpawnLocationX = value.World.X; playerSpawnLocationY = value.World.Y; }
+            set { playerSpawnLocationX = value.inWorld.x; playerSpawnLocationY = value.inWorld.y; }
         }
 
         public LoadedChunks loadedChunks

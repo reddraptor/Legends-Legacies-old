@@ -9,8 +9,8 @@ namespace Assets.Scripts.Components
     public class Player : MonoBehaviour
     {
         /* EDITABLE FIELDS */
-        public int sightRange = 32;
-        public float speed = 10;
+        //public int sightRange = 32;
+       // public float speed = 10;
 
         /* PROPERTIES */
         public Coordinates coordinates
@@ -26,6 +26,11 @@ namespace Assets.Scripts.Components
         public Movement movement
         {
             get { return _movement; }
+        }
+
+        public Attributes attributes
+        {
+            get { return GetComponent<Attributes>(); }
         }
 
         /* PRIVATE FIELDS */

@@ -1,20 +1,31 @@
-﻿using UnityEngine;
+﻿using System.Text;
+using UnityEngine;
 
-/// <summary>
-/// The smallest most divisable portion of the world map. Each is represented by a terrain tile on the main game view, holds at most one player, NPC, other mob, or
-/// barrier. May also contain a number of items on the ground.
-/// Each has an (x,y) coordinate designated as the world location, with the origin being the location at spawn. Each also has an (i, j, x, y) coordinate designated as a
-/// chunk location. (i,j) being the position of chunk the location is in, with the origin chunk being at spawn. The (x, y) portion is the position with in the chunk,
-/// with the origin being the lower left corner of the chunk.
-/// </summary>
 namespace Assets.Scripts.Data_Types
 {
-    public struct Coordinates// : Serialization.IHasSerializable<Coordinates>
-    {
-        World_Coordinates worldCoord;
-        Chunk_Coordinates chunkCoord;
-        static int chunkTileWidth = 32;
+    /// <summary>
+    /// The smallest most divisable portion of the world map. Each is represented by a terrain tile on the main game view, holds at most one player, NPC, other mob, or
+    /// barrier. May also contain a number of items on the ground.
+    /// Each has an (x,y) coordinate designated as the world coordinates, with the origin being (0,0). Each also has an (x, y, i, j) coordinate designated as a
+    /// chunk location. (x,y) being the position of the chunk the coordinate is in, with the origin chunk being at (0, 0). (i, j) is the position with in the chunk,
+    /// with the origin being the lower left corner of the chunk.
+    /// </summary>
 
+    public struct Coordinates
+    {
+        WorldCoordinates world;
+        ChunkCoordinates chunk;
+        static int chunkTileWidth = Chunk.chunkTileWidth;
+
+        public WorldCoordinates inWorld
+        {
+            get { return world; }
+        }
+
+        public ChunkCoordinates inChunks
+        {
+            get { return chunk; }
+        }
 
         /// <summary>
         /// Initialize this location to a world location
@@ -23,135 +34,91 @@ namespace Assets.Scripts.Data_Types
         /// <param name="y">vertical position of world location as an integer</param>
         /// <returns>The initialized object.</returns>
         /// 
-        public Coordinates(int x, int y)
+        public Coordinates(long x, long y)
         {
-            worldCoord = new World_Coordinates(x, y);
-            chunkCoord = new Chunk_Coordinates(0, 0, 0, 0);
-            chunkCoord = WorldToChunk(worldCoord);
+            world = new WorldCoordinates(x, y);
+            chunk = new ChunkCoordinates(world);
         }
 
         /// <summary>
         /// Initialize this location to a world location
         /// </summary>
-        /// <param name="worldCoord">world location as Location.World_Location struct</param>
+        /// <param name="worldCoordinates">world location as Location.World_Location struct</param>
         /// <returns>The initialized object.</returns>
-        public Coordinates(World_Coordinates worldCoord)
+        public Coordinates(WorldCoordinates worldCoordinates)
         {
-            this.worldCoord = worldCoord;
-            chunkCoord = new Chunk_Coordinates(0, 0, 0, 0);
-            chunkCoord = WorldToChunk(worldCoord);
+            world = worldCoordinates;
+            chunk = new ChunkCoordinates(world);
         }
 
         /// <summary>
         /// Initialize this location to a chunk location
         /// </summary>
-        /// <param name="i">horizontal position of the chunk in the world</param>
-        /// <param name="j">vertical position of the chunk in the world</param>
-        /// <param name="x">horizontal position of the location with in the chunk</param>
-        /// <param name="y">vertical position of the location with in the chunk</param>
+        /// <param name="x">horizontal position of the chunk in the world</param>
+        /// <param name="y">vertical position of the chunk in the world</param>
+        /// <param name="i">horizontal position of the location with in the chunk</param>
+        /// <param name="j">vertical position of the location with in the chunk</param>
         /// <returns>The initialized object.</returns>
-        public Coordinates(int i, int j, int x, int y)
+        public Coordinates(long x, long y, int i, int j)
         {
-            this = new Coordinates(0, 0);
-
-            chunkCoord.I = i; chunkCoord.J = j; chunkCoord.X = x; chunkCoord.Y = y;
-            worldCoord = ChunkToWorld(chunkCoord);
+            chunk = new ChunkCoordinates(x, y, i, j);
+            world = new WorldCoordinates(chunk);
         }
 
         /// <summary>
         /// Initialize this location to a chunk location
         /// </summary>
-        /// <param name="chunkLocation">chunk location as Location.Chunk_Location struct</param>
+        /// <param name="chunkCoordinates">chunk location as Location.Chunk_Location struct</param>
         /// <returns>The initialized object.</returns>
-        public Coordinates(Chunk_Coordinates chunkLocation)
+        public Coordinates(ChunkCoordinates chunkCoordinates)
         {
-            this = new Coordinates(0, 0);
-
-            chunkCoord = chunkLocation;
-            worldCoord = ChunkToWorld(chunkCoord);
+            chunk = chunkCoordinates;
+            world = new WorldCoordinates(chunk);
         }
 
-        World_Coordinates ChunkToWorld(Chunk_Coordinates chunkLocation)
+        public Coordinates North(int northward) 
         {
-            return ChunkToWorld(chunkLocation.I, chunkLocation.J, chunkLocation.X, chunkLocation.Y);
+            return Direction(0, northward);
         }
 
-        World_Coordinates ChunkToWorld(int i, int j, int x, int y)
+        public Coordinates NorthEast(int northward, int eastward)
         {
-            World_Coordinates worldLocation = new World_Coordinates();
-
-            if (i >= 0)
-            {
-                worldLocation.X = i * chunkTileWidth + x;
-            }
-            else
-            {
-                worldLocation.X = ((i + 1) * chunkTileWidth) + (x - chunkTileWidth);
-            }
-
-            if (j >= 0)
-            {
-                worldLocation.Y = j * chunkTileWidth + y;
-            }
-            else
-            {
-                worldLocation.Y = ((j + 1) * chunkTileWidth) + (y - chunkTileWidth);
-            }
-            return worldLocation;
+            return Direction(eastward, northward);
         }
 
-        Chunk_Coordinates WorldToChunk(World_Coordinates worldLocation)
+        public Coordinates NorthWest(int northward, int westward)
         {
-            return WorldToChunk(worldLocation.X, worldLocation.Y);
+            return Direction(-westward, northward);
         }
 
-        Chunk_Coordinates WorldToChunk(int x, int y)
+        public Coordinates South(int southward)
         {
-            Chunk_Coordinates chunkLocation = new Chunk_Coordinates();
-
-            if (x >= 0)
-            {
-                chunkLocation.I = Mathf.FloorToInt(x / chunkTileWidth);
-                chunkLocation.X = x - chunkLocation.I * chunkTileWidth;
-            }
-            else
-            {
-                chunkLocation.I = Mathf.CeilToInt((x + 1) / chunkTileWidth) - 1;
-                chunkLocation.X = (chunkTileWidth - 1) + (x + 1) - (chunkLocation.I + 1) * chunkTileWidth;
-            }
-
-            if (y >= 0)
-            {
-                chunkLocation.J = Mathf.FloorToInt(y / chunkTileWidth);
-                chunkLocation.Y = y - chunkLocation.J * chunkTileWidth;
-            }
-            else
-            {
-                chunkLocation.J = Mathf.CeilToInt((y + 1) / chunkTileWidth) - 1;
-                chunkLocation.Y = (chunkTileWidth - 1) + (y + 1) - (chunkLocation.J + 1) * chunkTileWidth;
-            }
-
-            return chunkLocation;
+            return Direction(0, -southward);
         }
 
-        public Coordinates North(int num) // SHouldn't reinitialize but create new Locations
+        public Coordinates SouthEast(int southward, int eastward)
         {
-            return new Coordinates(this.worldCoord.X, this.worldCoord.Y + num);
+            return Direction(eastward, -southward);
         }
 
-        public Coordinates South(int num)
+        public Coordinates SouthWest(int southward, int westward)
         {
-            return new Coordinates(this.worldCoord.X, this.worldCoord.Y - num);
+            return Direction(-westward, -southward);
         }
 
-        public Coordinates East(int num)
+        public Coordinates East(int eastward)
         {
-            return new Coordinates(this.worldCoord.X + num, this.worldCoord.Y);
+            return Direction(eastward, 0);
         }
 
-        public Coordinates West(int num)
+        public Coordinates West(int westward)
         {
-            return new Coordinates(this.worldCoord.X - num, this.worldCoord.Y);
+            return Direction(- westward, 0);
+        }
+
+        public Coordinates Direction(int horizontal, int vertical)
+        {
+            return new Coordinates(this.inWorld.x + horizontal, this.inWorld.y + vertical);
         }
 
         /// <summary>
@@ -159,42 +126,99 @@ namespace Assets.Scripts.Data_Types
         /// and every newly generated tile position recorded in cartesian fashion.
         /// The origin will be in chunk (0,0) lower left corner tile; (0,0) in chunk coordinates. 
         /// </summary>
-        public struct World_Coordinates
+        public struct WorldCoordinates
         {
+            private long _x;
+            private long _y;
 
-            int intX;
-            int intY;
-
-            public World_Coordinates(int x, int y)
+            public long x
             {
-                this.intX = x;
-                this.intY = y;
+                get { return _x; }
             }
 
-            public int X
+            public long y
             {
-                set
+                get { return _y; }
+            }
+
+            public WorldCoordinates(long x, long y)
+            {
+                _x = x;
+                _y = y;
+            }
+
+            public WorldCoordinates(ChunkCoordinates chunk)
+            {
+                if (chunk.x >= 0)
+                    _x = chunk.x * chunkTileWidth + chunk.i;
+                else
+                    _x = ((chunk.x + 1) * chunkTileWidth) + (chunk.i - chunkTileWidth);
+
+                if (chunk.y >= 0)
+                    _y = chunk.y * chunkTileWidth + chunk.j;
+                else
+                    _y = ((chunk.y + 1) * chunkTileWidth) + (chunk.j - chunkTileWidth);
+            }
+
+            public override string ToString()
+            {
+                return "(" + x.ToString() + ", " + y.ToString() + ")";
+            }
+
+            /// <summary>
+            /// Compares another object for equality to this WorldCoordinates. If the object is a non-null WorldCoordinates where all fields share the same values, returns true;
+            /// else return false.
+            /// </summary>
+            /// <param name="obj">An object to compare to this WorldCoordinates</param>
+            /// <returns>A boolean indictating equality.</returns>
+            public override bool Equals(object obj)
+            {
+                if (obj == null) return false;
+
+                if (obj.GetType() == typeof(WorldCoordinates))
                 {
-                    intX = value;
+                    WorldCoordinates test = (WorldCoordinates)obj;
+
+                    if (x == test.x && y == test.y) return true;
                 }
-                get
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                int prime1 = 17;
+                int prime2 = 23;
+
+                unchecked
                 {
-                    return intX;
+                    long hash = prime1;
+
+                    hash = hash * prime2 + x;
+                    hash = hash * prime2 + y;
+                    return (int)hash;
                 }
             }
 
-            public int Y
+            /// <summary>
+            /// Compares WorldCoordinates for equality. If both are null or equal returns true; else returns false;
+            /// </summary>
+            /// <param name="Coord1">WorldCoordinates</param>
+            /// <param name="Coord2">WorldCoordiantes</param>
+            /// <returns>A boolean indictating equality.</returns>
+            public static bool operator ==(WorldCoordinates Coord1, WorldCoordinates Coord2)
             {
-                set
+                if (Coord1 == null)
                 {
-                    intY = value;
+                    if (Coord2 == null) return true;
+                    else return false;
                 }
-                get
-                {
-                    return intY;
-                }
+                else return Coord1.Equals(Coord2);
             }
 
+            public static bool operator !=(WorldCoordinates Coord1, WorldCoordinates Coord2)
+            {
+                return !(Coord1 == Coord2);
+            }
 
         }
 
@@ -203,123 +227,181 @@ namespace Assets.Scripts.Data_Types
         /// with(0,0) being the lower left tile.
         /// World origin(0,0) would be in Chunk(0,0) in the lower left corner tile(0,0). */
         /// </summary>
-        public struct Chunk_Coordinates
+        public struct ChunkCoordinates
         {
-            int intI;
-            int intJ;
-            int intX;
-            int intY;
+            private long _x;
+            private long _y;
+            private int _i;
+            private int _j;
 
-            public Chunk_Coordinates(int i, int j, int x, int y)
+            public long x
             {
-                this.intI = i;
-                this.intJ = j;
-                this.intX = x;
-                this.intY = y;
+                get { return _x; }
             }
 
-            public int X
+            public long y
             {
-                set
+                get { return _y; }
+            }
+
+            public int i
+            {
+                get { return _i; }
+            }
+
+            public int j
+            {
+                get { return _j; }
+            }
+
+            public ChunkCoordinates(long x, long y, int i, int j)
+            {
+                _x = x;
+                _y = y;
+                _i = i;
+                _j = j;
+            }
+
+            public ChunkCoordinates(WorldCoordinates world)
+            {
+                if (world.x >= 0)
                 {
-                    intX = value;
+                    _x = Mathf.FloorToInt(world.x / chunkTileWidth);
+                    _i = (int)(world.x - _x * chunkTileWidth);
                 }
-                get
+                else
                 {
-                    return intX;
+                    _x = Mathf.CeilToInt((world.x + 1) / chunkTileWidth) - 1;
+                    _i = (int)((chunkTileWidth - 1) + (world.x + 1) - (_x + 1) * chunkTileWidth);
+                }
+
+                if (world.y >= 0)
+                {
+                    _y = Mathf.FloorToInt(world.y / chunkTileWidth);
+                    _j = (int)(world.y - _y * chunkTileWidth);
+                }
+                else
+                {
+                    _y = Mathf.CeilToInt((world.y + 1) / chunkTileWidth) - 1;
+                    _j = (int)((chunkTileWidth - 1) + (world.y + 1) - (_y + 1) * chunkTileWidth);
+                }
+
+            }
+
+            public override string ToString()
+            {
+                return "(" + x.ToString() + ", " + y.ToString() + "; " + i.ToString() + ", " + j.ToString() + ")";
+            }
+
+            /// <summary>
+            /// Compares another object for equality to this ChunkCoordinates. If the object is a non-null ChunkCoordinate where all fields share the same values, returns true;
+            /// else return false.
+            /// </summary>
+            /// <param name="obj">An object to compare to this ChunkCoordinates</param>
+            /// <returns>A boolean indictating equality.</returns>
+            public override bool Equals(object obj)
+            {
+                if (obj == null) return false;
+                if (obj.GetType() == typeof(ChunkCoordinates))
+                {
+                    ChunkCoordinates test = (ChunkCoordinates)obj;
+
+                    if (x == test.x && y == test.y && i == test.i && j == test.j) return true;
+                }
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                int prime1 = 17;
+                int prime2 = 23;
+
+                unchecked
+                {
+                    long hash = prime1;
+
+                    hash = hash * prime2 + x;
+                    hash = hash * prime2 + y;
+                    hash = hash * prime2 + i;
+                    hash = hash * prime2 + j;
+                    return (int)hash;
                 }
             }
 
-            public int Y
+            public static bool operator ==(ChunkCoordinates Coord1, ChunkCoordinates Coord2)
             {
-                set
+                if (Coord1 == null)
                 {
-                    intY = value;
+                    if (Coord2 == null) return true;
+                    else return false;
                 }
-                get
-                {
-                    return intY;
-                }
-            }
-            public int I
-            {
-                set
-                {
-                    intI = value;
-                }
-                get
-                {
-                    return intI;
-                }
+                else return Coord1.Equals(Coord2);
             }
 
-            public int J
+            public static bool operator !=(ChunkCoordinates Coord1, ChunkCoordinates Coord2)
             {
-                set
-                {
-                    intJ = value;
-                }
-                get
-                {
-                    return intJ;
-                }
+                return !(Coord1 == Coord2);
             }
 
         }
-
-        public Chunk_Coordinates Chunk
-        {
-            get
-            {
-                return chunkCoord;
-            }
-        }
-
-        public World_Coordinates World
-        {
-            get
-            {
-                return worldCoord;
-            }
-        }
-
-        //public Serialization.ASerializable<Coordinates> serializable
-        //{
-        //    get { return new CoordinatesSerializable(this); }
-        //    set { value.SetValuesIn(this); }
-        //}
-
 
         float Hypotenuse(float x, float y)
         {
             return Mathf.Sqrt(x * x + y * y);
         }
 
-        public float Range(Coordinates otherLocation)
+        public float Range(Coordinates otherCoords)
         {
-            float diffX = otherLocation.World.X - worldCoord.X;
-            float diffY = otherLocation.World.Y - worldCoord.Y;
+            float diffX = otherCoords.inWorld.x - inWorld.x;
+            float diffY = otherCoords.inWorld.y - inWorld.y;
 
             return Hypotenuse(diffX, diffY);
         }
 
-        //[System.Serializable]
-        //public class CoordinatesSerializable : Serialization.ASerializable<Coordinates>
-        //{
-        //    public int x;
-        //    public int y;
+        public override string ToString()
+        {
+            return inWorld.ToString() + ":" + inChunks.ToString();
+        }
 
-        //    public CoordinatesSerializable(Coordinates coord) : base(coord)
-        //    {
-        //        x = (location as Coordinates).world.x;
-        //        y = (location as Coordinates).world.y;
-        //    }
+        /// <summary>
+        /// Compares another object for equality to this Coordinates. If the object is a non-null Coordinates where all fields share the same values, returns true;
+        /// else return false.
+        /// </summary>
+        /// <param name="obj">An object to compare to this Coordinates</param>
+        /// <returns>A boolean indictating equality.</returns>
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
 
-        //    public override void SetValuesIn(Coordinates location)
-        //    {
-        //        location = new Coordinates(x, y);
-        //    }
-        //}
+            if (obj.GetType() == typeof(Coordinates))
+            {
+                Coordinates test = (Coordinates)obj;
+
+                if (inChunks.Equals(test.inChunks)) return true;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return chunk.GetHashCode();
+        }
+
+        public static bool operator ==(Coordinates Coord1, Coordinates Coord2)
+        {
+            if (Coord1 == null)
+            {
+                if (Coord2 == null) return true;
+                else return false;
+            }
+            else return Coord1.Equals(Coord2);
+        }
+
+        public static bool operator !=(Coordinates Coord1, Coordinates Coord2)
+        {
+            return !(Coord1 == Coord2);
+        }
+
     }
 
 }

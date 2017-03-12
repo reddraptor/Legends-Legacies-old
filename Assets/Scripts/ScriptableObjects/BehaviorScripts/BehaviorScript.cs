@@ -10,8 +10,6 @@ namespace Assets.Scripts.ScriptableObjects.BehaviorScripts
 
         public Behavior behavior;
 
-        private System.Random random;
-
         public abstract void Run(BehaviorManager behaviorManager);
 
         public IntegerPair UnitVector(Direction direction)
@@ -54,19 +52,18 @@ namespace Assets.Scripts.ScriptableObjects.BehaviorScripts
             return unitVector;
         }
 
-        public Direction RandomDirection()
+        public Direction RandomDirection(System.Random random)
         {
             return (Direction) random.Next(8);
         }
 
-        public bool Roll(float percent)
+        public bool Roll(System.Random random, float percent)
         {
             return random.NextDouble() < percent ? true : false;
         }
 
         private void OnEnable()
         {
-            random = new System.Random();
         }
     }
 }

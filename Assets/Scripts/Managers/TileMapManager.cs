@@ -17,16 +17,30 @@ public class TileMapManager : MonoBehaviour
     public float originX = 0;
     public float originY = 0;
 
+    public WorldManager worldManager
+    {
+        get { return GetComponent<WorldManager>(); }
+    }
+    public MovementManager movementManager
+    {
+        get { return GetComponent<MovementManager>(); }
+    }
+    public EntityManager entityManager
+    {
+        get { return GetComponent<EntityManager>(); }
+    }
+    public GameManager gameManager
+    {
+        get { return GetComponent<GameManager>(); }
+    }
+
+
     /* PRIVATE FIELDS */
     Vector2 lastOrthoSize;
     IntegerPair viewableTileDimensions;
     IntegerPair focusIndices;
     Coordinates lowerLeft;
     Coordinates upperRight;
-    WorldManager worldManager;
-    MovementManager movementManager;
-    EntityManager entityManager;
-    GameManager gameManager;
     Vector3 origin;
     bool showMap;
 
@@ -51,10 +65,6 @@ public class TileMapManager : MonoBehaviour
         viewableTileDimensions = new IntegerPair();
         focusIndices = new IntegerPair();
         origin = new Vector2(originX, originY);
-        worldManager = GetComponent<WorldManager>();
-        movementManager = GetComponent<MovementManager>();
-        gameManager = GetComponent<GameManager>();
-        entityManager = GetComponent<EntityManager>();
     }
 
 
@@ -63,7 +73,7 @@ public class TileMapManager : MonoBehaviour
     {
         tileMap.transform.position = origin;
         UpdateDimensions();
-        ChangeFocus(worldManager.world.playerSpawnLocation);
+        ChangeFocus(worldManager.world.playerSpawnCoordinates);
         InstanceTiles();
     }
 
@@ -123,12 +133,13 @@ public class TileMapManager : MonoBehaviour
                 position.x = tileMap.transform.position.x - viewableTileDimensions.i / 2 + i;
                 position.y = tileMap.transform.position.x - viewableTileDimensions.j / 2 + j;
 
-                tileInstance = Instantiate(worldManager.GetTerrainTile(GetCoordinates(new IntegerPair(i, j))), position, Quaternion.identity);
+                tileInstance = Instantiate(worldManager.GetTilePrefab(GetCoordinates(new IntegerPair(i, j))), position, Quaternion.identity);
                 tileInstance.transform.SetParent(tileMap.transform);
                 tileMap.tileArray[i, j] = tileInstance;
             }
         }
     }
+
 
     /// <summary>
     /// Destroys all terrain tile instances
@@ -169,15 +180,20 @@ public class TileMapManager : MonoBehaviour
     /// </summary>
     /// <param name="tileArrayIndices">Tile position in camera view of type Integer Pair</param>
     /// <returns>Location holding world map location</returns>
-    public Coordinates GetCoordinates(IntegerPair tileArrayIndices)
+    internal Coordinates GetCoordinates(IntegerPair tileArrayIndices)
     {
-        Coordinates.World_Coordinates worldLocation = new Coordinates.World_Coordinates();
-
-        worldLocation.X = tileArrayIndices.i - focusIndices.i + focus.World.X;
-        worldLocation.Y = tileArrayIndices.j - focusIndices.j + focus.World.Y;
-
-        return new Coordinates(worldLocation);
+        long x = tileArrayIndices.i - focusIndices.i + focus.inWorld.x;
+        long y = tileArrayIndices.j - focusIndices.j + focus.inWorld.y;
+        return new Coordinates(x, y);
     }
+
+    internal Coordinates GetCoordinates(Vector3 position)
+    {
+        long x = focus.inWorld.x + Mathf.FloorToInt(position.x);
+        long y = focus.inWorld.y + Mathf.FloorToInt(position.y);
+        return new Coordinates(x, y);
+    }
+
 
     public void Scroll(int horizontal, int vertical)
     {
@@ -191,7 +207,7 @@ public class TileMapManager : MonoBehaviour
         if (!mapMovement.isMoving)
         {
 
-            ChangeFocus(new Coordinates(focus.World.X + horizontal, focus.World.Y + vertical));
+            ChangeFocus(new Coordinates(focus.inWorld.x + horizontal, focus.inWorld.y + vertical));
 
             movementManager.Add(mapMovement, -horizontal, -vertical, speed);
             movementManager.MoveEntities(-horizontal, -vertical, speed);
@@ -206,22 +222,23 @@ public class TileMapManager : MonoBehaviour
     void ChangeFocus(Coordinates coordinates)
     {
         // define the bounds of the map that will be in the view
-        lowerLeft = new Coordinates(coordinates.World.X - (viewableTileDimensions.x - 1) / 2, (coordinates.World.Y - (viewableTileDimensions.y - 1) / 2));
-        upperRight = new Coordinates(coordinates.World.X + (viewableTileDimensions.x - 1) / 2, (coordinates.World.Y + (viewableTileDimensions.x - 1) / 2));
+        lowerLeft = new Coordinates(coordinates.inWorld.x - (viewableTileDimensions.x - 1) / 2, (coordinates.inWorld.y - (viewableTileDimensions.y - 1) / 2));
+        upperRight = new Coordinates(coordinates.inWorld.x + (viewableTileDimensions.x - 1) / 2, (coordinates.inWorld.y + (viewableTileDimensions.x - 1) / 2));
 
-        // if any part of the view is outside current loaded chunk distance load new chunks
-        if (!worldManager.LoadedChunksContain(lowerLeft, upperRight))
+        // If new coordinates are outside current chunk, or no chunks have been loaded, load chunks at new coordinates
+        if (coordinates.inChunks.x != focus.inChunks.x || coordinates.inChunks.y != focus.inChunks.y || !worldManager.hasLoadedChunks)
         {
             worldManager.LoadChunksAt(coordinates);
         }
+
         tileMap.GetComponent<Entity>().coordinates = coordinates;
     }
 
     public Vector3 GetScreenPositionAt(Coordinates coordinates)
     {
         Vector3 position = new Vector3();
-        position.x = (coordinates.World.X - focus.World.X);
-        position.y = (coordinates.World.Y - focus.World.Y);
+        position.x = (coordinates.inWorld.x - focus.inWorld.x);
+        position.y = (coordinates.inWorld.y - focus.inWorld.y);
         return position;
     }
 

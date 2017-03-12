@@ -84,16 +84,15 @@ public class GameManager : MonoBehaviour
 
     internal void BeginGame()
     {
+        if (worldManager) worldManager.LoadChunksAt(worldManager.world.playerSpawnCoordinates);
+        
         if (entityManager & worldManager)
         {
             _player = entityManager.GetPlayer("Player One");
             if (!player)
-                _player = entityManager.Spawn("Player", worldManager.world.playerSpawnLocation).GetComponent<Player>();
-            entityManager.Spawn("Cow", new Coordinates(5, 5));
-            entityManager.Spawn("Cow", new Coordinates(-5, -5));
+                _player = entityManager.Spawn("Player", worldManager.world.playerSpawnCoordinates).GetComponent<Player>();
         }
         
-        if (worldManager) worldManager.LoadChunksAt(_player.coordinates);
 
         if (tileMapManager)
         {
@@ -110,7 +109,7 @@ public class GameManager : MonoBehaviour
 
     internal void ClearGame()
     {
-        if (entityManager) entityManager.DespawnAll();
+        if (entityManager) entityManager.CleanUpSpawns();
         tileMapManager.ShowMap(false);
     }
 

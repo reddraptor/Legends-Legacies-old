@@ -4,11 +4,15 @@ using Assets.Scripts.Data_Types;
 namespace Assets.Scripts.Components
 {
     [RequireComponent(typeof(Entity))]
-    class TerrainTile : MonoBehaviour
+    public class TerrainTile : MonoBehaviour
     {
+        public enum TerrainType {Land, Water, Air };
+
         /* EDITOR FIELDS */
 
+
         public float speedModifier = 1;
+        public TerrainType terrainType = TerrainType.Land;
 
         /* PROPERTIES */
         public Coordinates coordinates

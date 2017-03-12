@@ -18,7 +18,7 @@ namespace Assets.Scripts.UI_Components.Menu
 
         public override void OnOpen()
         {
-            seedField.text = new Random().Next(100000).ToString();
+            if (seedField) seedField.text = new Random().Next(100000).ToString();
             worldManager = menuManager.GetComponent<WorldManager>();
             gameManager = menuManager.GetComponent<GameManager>();
             mainMenu = (Menu_Main)menuManager.GetMenu("Main Menu");
@@ -26,10 +26,10 @@ namespace Assets.Scripts.UI_Components.Menu
 
         public void OnCreateWorld()
         {
-            worldManager.world.seed = ConvertTextToSeed(seedField.text);
-            gameManager.BeginGame();
-            mainMenu.saveEnabled = true;
-            menuManager.Close(this);
+            if (seedField & worldManager) worldManager.world.seed = ConvertTextToSeed(seedField.text);
+            if (gameManager) gameManager.BeginGame();
+            if (mainMenu) mainMenu.saveEnabled = true;
+            if (menuManager) menuManager.Close(this);
         }
 
         private int ConvertTextToSeed(string text)

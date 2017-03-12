@@ -39,8 +39,8 @@ public class Location_Test {
 
     void Output(Coordinates loc)
     {
-        Debug.Log("World Location: " + loc.World.X + " " + loc.World.Y);
-        Debug.Log("Chunk Location: " + loc.Chunk.I + " " + loc.Chunk.J + " " + loc.Chunk.X + " " + loc.Chunk.Y);
+        Debug.Log("World Location: " + loc.inWorld.x + " " + loc.inWorld.y);
+        Debug.Log("Chunk Location: " + loc.inChunks.x + " " + loc.inChunks.y + " " + loc.inChunks.i + " " + loc.inChunks.j);
         Debug.Log("\n");
     }
 
@@ -55,8 +55,8 @@ public class Location_Test {
 
     void Check(Coordinates loc)
     {
-        if (loc.Chunk.X < 0 || loc.Chunk.X > 15) Assert.Fail();
-        if (loc.Chunk.Y < 0 || loc.Chunk.Y > 15) Assert.Fail();
+        if (loc.inChunks.i < 0 || loc.inChunks.i > 15) Assert.Fail();
+        if (loc.inChunks.j < 0 || loc.inChunks.j > 15) Assert.Fail();
     }
 
 }

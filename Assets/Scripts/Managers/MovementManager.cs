@@ -8,7 +8,16 @@ using System;
 public class MovementManager : MonoBehaviour
 {
     HashSet<Movement> movements;
-    EntityManager entityManager;
+
+    public EntityManager entityManager
+    {
+        get { return GetComponent<EntityManager>(); }
+    }
+
+    public TileMapManager tileMapManager
+    {
+        get { return GetComponent<TileMapManager>(); }
+    }
     
     /* UNITY MESSAGES */
 
@@ -16,7 +25,6 @@ public class MovementManager : MonoBehaviour
     private void Awake()
     {
         movements = new HashSet<Movement>();
-        entityManager = GetComponent<EntityManager>();
     }
 
 
@@ -80,31 +88,59 @@ public class MovementManager : MonoBehaviour
 
         while (sqrRemainingDistance > float.Epsilon)
         {
+            if (movement == null) yield break;
             Vector3 newPosition = Vector3.MoveTowards(movement.transform.position, end, movement.speed * Time.deltaTime);
             movement.rigidbody.MovePosition(newPosition);
             sqrRemainingDistance = (movement.transform.position - end).sqrMagnitude;
-            yield return null;
+            yield return null; 
         }
-        CorrectPosition(movement);
         movement.isMoving = false;
+        CorrectPosition(movement);
+        
+        // Start Debug Code
+        if (movement)
+        {
+            if (movement.transform.position == entityManager.GetPlayer("Player One").transform.position)
+            {
+                Debug.Log(
+                    movement.name + " sharing place with player!" + "\n" +
+                    "Player: " + entityManager.GetPlayer("Player One").coordinates + "\n" +
+                    movement.name + " " + movement.entity.instanceId + ": " + movement.coordinates + "\n" +
+                    "Focus: " + tileMapManager.focus
+                    );
+            }
+
+            if (movement.entity.coordinates != tileMapManager.GetCoordinates(movement.transform.position) && movement.name != tileMapManager.tileMap.name)
+            {
+                Debug.Log(
+                    "Coordinates and position do not match!" + "\n" +
+                    movement.name + movement.entity.instanceId + ": " + movement.coordinates + "\n" +
+                    tileMapManager.tileMap.name + ": " + tileMapManager.GetCoordinates(movement.transform.position)
+                    );
+            }
+
+        }
+
+        // End Debug Code
+
     }
 
     internal void MoveEntities(int horizontal, int vertical, float speed)
     {
         foreach (Entity entity in entityManager.mobCollection)
         {
-            Add(entity.GetComponent<Movement>(), horizontal, vertical, speed);
+            if (entity) Add(entity.GetComponent<Movement>(), horizontal, vertical, speed);
         }
     }
 
     private void CorrectPosition(Movement movement)
     {
+        if (!movement) return;
+
+        if (movement.GetComponent<Entity>().type == EntityManager.EntityType.Map) return; // tileMapManager will handle map's position.
+
         if (movement.isMoving) return;
-
-        if (movement.GetComponent<Entity>().type == EntityManager.EntityType.Map) return; // tileMapManager will correct position.
-
-        TileMapManager tileMapManager = GetComponent<TileMapManager>();
-
+        
         if (tileMapManager)
         {
             Vector3 predictedPosition = tileMapManager.GetScreenPositionAt(movement.coordinates);

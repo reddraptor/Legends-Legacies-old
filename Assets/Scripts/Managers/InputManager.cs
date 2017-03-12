@@ -85,35 +85,50 @@ public class InputManager : MonoBehaviour
         {
             if ((inputDirection.x != 0 || inputDirection.y != 0) && gameManager.player != null)
             {
-                if (inputDirection.x < 0)
-                {
-                    entityManager.Place(gameManager.player.entity, gameManager.player.coordinates.West(1));
-                }
-                else if (inputDirection.x > 0)
-                {
-                    entityManager.Place(gameManager.player.entity, gameManager.player.coordinates.East(1));
-                }
+                //bool placed = false; //If player successfully placed, this will be set to true
+                //if (inputDirection.x < 0)
+                //{
+                //    if (entityManager.Place(gameManager.player.entity, gameManager.player.coordinates.West(1))) placed = true;
+                //}
+                //else if (inputDirection.x > 0)
+                //{
+                //    if (entityManager.Place(gameManager.player.entity, gameManager.player.coordinates.East(1))) placed = true;
+                //}
 
-                if (inputDirection.y < 0)
-                {
-                    entityManager.Place(gameManager.player.entity, gameManager.player.coordinates.South(1));
-                }
-                else if (inputDirection.y > 0)
-                {
-                    entityManager.Place(gameManager.player.entity, gameManager.player.coordinates.North(1));
-                }
+                //if (inputDirection.y < 0)
+                //{
+                //    if (entityManager.Place(gameManager.player.entity, gameManager.player.coordinates.South(1))) placed = true;
+                //}
+                //else if (inputDirection.y > 0)
+                //{
+                //    if (entityManager.Place(gameManager.player.entity, gameManager.player.coordinates.North(1))) placed = true;
+                //}
 
-                if (inputDirection.x != 0 || inputDirection.y != 0)
+                // If player successfully placed, scroll the map
+                if (entityManager.Place(gameManager.player.entity, gameManager.player.coordinates.Direction(inputDirection.x, inputDirection.y)))
                 {
-                    if (!gameManager.player.entity.IsCentered)
-                    {
-                        entityManager.Center(gameManager.player.entity);
-                    }
-
-                    float speed = gameManager.player.speed * worldManager.SpeedModifierAt(gameManager.player.coordinates);
+                    //if (!gameManager.player.entity.IsCentered)
+                    //{
+                    //    entityManager.Center(gameManager.player.entity);
+                    //}
+                    float speed = worldManager.GetSpeed(gameManager.player.coordinates, gameManager.player.attributes, Assets.Scripts.Components.TerrainTile.TerrainType.Land);
                     tileMapManager.Scroll(inputDirection.x, inputDirection.y, speed);
-                    behaviorManager.RunBehaviors();
                 }
+
+                // START DEBUG CODE
+                if (tileMapManager.focus != gameManager.player.coordinates)
+                {
+                    Debug.Log(
+                        "Focus and player coordinates do not match. \n" +
+                        "Focus: " + tileMapManager.focus + "\n" +
+                        "Player: " + gameManager.player.coordinates
+                        );
+                }
+                // END DEBUG CODE
+
+                // Run mob behaviors
+                behaviorManager.RunBehaviors();
+
             }
 
             else if (mouseScrollActive)
@@ -121,17 +136,17 @@ public class InputManager : MonoBehaviour
                 if ((mouseScrollDirection.x != 0 || mouseScrollDirection.y != 0))
                 {
                     // Ensure map doesn't scroll horizontally out of player's sight range.
-                    Coordinates newFocusHorizontal = new Coordinates(tileMapManager.focus.World.X + mouseScrollDirection.x, tileMapManager.focus.World.Y);
+                    Coordinates newFocusHorizontal = new Coordinates(tileMapManager.focus.inWorld.x + mouseScrollDirection.x, tileMapManager.focus.inWorld.y);
                     if (mouseScrollDirection.x != 0
-                        && gameManager.player.entity.coordinates.Range(newFocusHorizontal) > gameManager.player.sightRange - worldManager.MapGenerator.chunkTileWidth / 2)
+                        && gameManager.player.entity.coordinates.Range(newFocusHorizontal) > gameManager.player.attributes.sightRange - worldManager.mapGenerator.chunkTileWidth / 2)
                     {
                         mouseScrollDirection.x = 0;
                     }
 
                     // Ensure map doesn't scroll vertically out of player's sight range.
-                    Coordinates newFocusVertical = new Coordinates(tileMapManager.focus.World.X, tileMapManager.focus.World.Y + mouseScrollDirection.y);
+                    Coordinates newFocusVertical = new Coordinates(tileMapManager.focus.inWorld.x, tileMapManager.focus.inWorld.y + mouseScrollDirection.y);
                     if (mouseScrollDirection.y != 0
-                        && gameManager.player.entity.coordinates.Range(newFocusVertical) > gameManager.player.sightRange - worldManager.MapGenerator.chunkTileWidth / 2)
+                        && gameManager.player.entity.coordinates.Range(newFocusVertical) > gameManager.player.attributes.sightRange - worldManager.mapGenerator.chunkTileWidth / 2)
                     {
                         mouseScrollDirection.y = 0;
                     }
@@ -140,10 +155,10 @@ public class InputManager : MonoBehaviour
                     if (mouseScrollDirection.x == 0 && mouseScrollDirection.y == 0) return;
 
                     Coordinates newFocusLocation
-                        = new Coordinates(tileMapManager.focus.World.X + mouseScrollDirection.x, tileMapManager.focus.World.Y + mouseScrollDirection.y);
+                        = new Coordinates(tileMapManager.focus.inWorld.x + mouseScrollDirection.x, tileMapManager.focus.inWorld.y + mouseScrollDirection.y);
 
                     // Ensure the scrolling of both directions would not be out of player's sight. Not sure if this is necessary?!?!
-                    if (gameManager.player.entity.coordinates.Range(newFocusLocation) > gameManager.player.sightRange - worldManager.MapGenerator.chunkTileWidth / 2) return;
+                    if (gameManager.player.entity.coordinates.Range(newFocusLocation) > gameManager.player.attributes.sightRange - worldManager.mapGenerator.chunkTileWidth / 2) return;
 
                     movementManager.Add(gameManager.player.movement, -mouseScrollDirection.x, -mouseScrollDirection.y, tileMapManager.scrollSpeed);
                     //entityManager.SetMoveAll(-mouseScrollDirection.x, -mouseScrollDirection.y, tileMapManager.scrollSpeed);

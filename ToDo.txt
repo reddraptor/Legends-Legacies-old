@@ -23,15 +23,21 @@ Try an entity system approach
 Change Serialization Implementation
 -PersistanceManager? DONE
 
+Coordinate Data Type
+-return to read-only properties DONE
+-hashcode implementation DONE
+
+
 Early enemy implementation
 -spawning and map scrolling DONE
 -behaviors
 -- movement DONE
 -- herd behavior test
 -- combat
--spawning and unspawning with chunk load/unload
+-spawning and unspawning with chunk load/unload DONE
 attributes
--- component
+-- component DONE
+-- early speed variable BUGFIXING
 UI widgets
 combat system
 
@@ -69,7 +75,7 @@ Entities
 --------
 Unique entity Ids
 
-Player/Enemies/NPC
+player/mobs/npc
 -------
 Speed modifiers by tile, props, status, etc
 sight(perception) system

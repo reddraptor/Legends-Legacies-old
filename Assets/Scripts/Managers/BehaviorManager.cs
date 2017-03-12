@@ -8,31 +8,29 @@ namespace Assets.Scripts.Managers
     public class BehaviorManager : MonoBehaviour
     {
 
+        public System.Random randomizer;
+
         public EntityManager entityManager 
         {
-            get { return eManager; }
+            get { return GetComponent<EntityManager>(); }
         }
 
         public MovementManager movementManager
         {
-            get { return mManager; }
+            get { return GetComponent<MovementManager>(); }
         }
 
+        public WorldManager worldManager
+        {
+            get { return GetComponent<WorldManager>(); }
+        }
 
         private List<Behavior> behaviorList;
-        EntityManager eManager;
-        MovementManager mManager;
-
-
-
-
-
-
+        
         private void Awake()
         {
             behaviorList = new List<Behavior>();
-            eManager = GetComponent<EntityManager>();
-            mManager = GetComponent<MovementManager>();
+            randomizer = new System.Random();
         }
 
         

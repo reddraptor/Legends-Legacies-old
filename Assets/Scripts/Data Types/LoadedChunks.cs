@@ -1,28 +1,23 @@
 ﻿using Assets.Scripts.ScriptableObjects;
+using System.Collections.Generic;
 
 namespace Assets.Scripts.Data_Types
 {
     public class LoadedChunks
     {
-        public Coordinates lowerLeftCorner; // The location in the lower left corner of this chunk array
+        public Coordinates lowerLeft; // The location in the lower left corner of this chunk array
+        public Chunk[,] chunkArray;
+        public HashSet<Chunk> chunkSet;
+        public bool hasLoaded = false;
 
         /* PRIVATE FIELDS */
 
-        Chunk[,] chunks;
-    
         /* CONSTRUCTORS */
 
         public LoadedChunks(World world)
         {
-            chunks = new Chunk[world.loadedChunkWidth, world.loadedChunkWidth];
+            chunkArray = new Chunk[world.loadedChunkWidth, world.loadedChunkWidth];
+            chunkSet = new HashSet<Chunk>();
         }
-
-        /* PROPERTIES */
-
-        public Chunk[,] Chunks
-        {
-            get { return chunks; }
-        }
-        
     }
 }

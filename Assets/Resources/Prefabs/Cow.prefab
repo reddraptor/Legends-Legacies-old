@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 114220090026633026}
   - component: {fileID: 114367862418007120}
   - component: {fileID: 114895732011450958}
+  - component: {fileID: 114621186646527866}
   m_Layer: 0
   m_Name: Cow
   m_TagString: Mob
@@ -77,6 +78,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   placed: 0
+  entityType: 3
 --- !u!114 &114367862418007120
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -88,7 +90,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1df6822c39a637d40b7219d108c23905, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
 --- !u!114 &114384235699136460
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -100,10 +101,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fea50b0ebc6e19043ba657ec0b973122, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magnitude: 2
+  speed: 2
   horizontal: 0
   vertical: 0
   isMoving: 0
+--- !u!114 &114621186646527866
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1917203195682194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d007e97553ef91409f75c90f8b04cff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  body: 4
+  spirit: 1
+  mind: 1
+  homeTerrain: 0
 --- !u!114 &114895732011450958
 MonoBehaviour:
   m_ObjectHideFlags: 1

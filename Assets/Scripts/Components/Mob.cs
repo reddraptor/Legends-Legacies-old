@@ -6,11 +6,14 @@ namespace Assets.Scripts.Components
 
     [RequireComponent(typeof(Movement))]
     [RequireComponent(typeof(Entity))]
+    [RequireComponent(typeof(Attributes))]
 
     class Mob : MonoBehaviour
     {
-
-        public float speed = 5;
+        public Attributes attributes
+        {
+            get { return GetComponent<Attributes>(); }
+        }
 
         public Coordinates coordinates
         {
