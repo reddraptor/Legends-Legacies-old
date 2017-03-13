@@ -25,11 +25,8 @@ namespace Assets.Scripts.Managers
             get { return GetComponent<WorldManager>(); }
         }
 
-        private List<Behavior> behaviorList;
-        
         private void Awake()
         {
-            behaviorList = new List<Behavior>();
             randomizer = new System.Random();
         }
 
@@ -37,24 +34,40 @@ namespace Assets.Scripts.Managers
 
         private void Update()
         {
+            List<Behavior> behaviorList = GetBehaviorList();
+
+            foreach (Behavior behavior in behaviorList)
+            {
+                if (behavior)
+                    if (behavior.movement)
+                        if (!behavior.movement.isMoving) behavior.isIdle = true;
+            }
+
         }
 
         public void RunBehaviors()
         {
-            // Get list of behaviors from entity collections.
-            foreach (Entity entity in entityManager.mobCollection)
-            {
-                behaviorList.Add(entity.GetComponent<Behavior>());
-            }
+            List<Behavior> behaviorList = GetBehaviorList();
 
             // Run behaviors
             foreach (Behavior behavior in behaviorList)
             {
-                behavior.idleBehavior.Run(this);
+                if (behavior) behavior.idleBehavior.Run(this);
             }
-
-            // Clear list
-            behaviorList.Clear();
         }
+
+        private List<Behavior> GetBehaviorList()
+        {
+            Behavior behavior;
+            List<Behavior> behaviorList = new List<Behavior>();
+
+            foreach (Entity entity in entityManager.mobCollection)
+            {
+                behavior = entity.GetComponent<Behavior>();
+                if (behavior) behaviorList.Add(behavior);
+            }
+            return behaviorList;
+        }
+
     }
 }

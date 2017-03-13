@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Assets.Scripts.Data_Types;
 using Assets.Scripts.Components;
 using System;
-using System.Collections;
 
 public class EntityManager : MonoBehaviour
 {
@@ -30,7 +29,11 @@ public class EntityManager : MonoBehaviour
     {
         get { return GetComponent<WorldManager>(); }
     }
-
+    
+    internal GameManager gameManager
+    {
+        get { return GetComponent<GameManager>(); }
+    }
 
     /* PRIVATE FIELDS */
     System.Random random = new System.Random();
@@ -84,7 +87,6 @@ public class EntityManager : MonoBehaviour
     /// entity can not be placed at those coordinates, null is returned.</returns>
     internal Entity Spawn(string name, Coordinates coordinates)
     {
-        //Debug.Log("Spawning " + name + "...");
 
         GameObject prefab = prefabDictionary[name];
         GameObject gOEntity;
@@ -195,13 +197,71 @@ public class EntityManager : MonoBehaviour
             Despawn(entity);
         }
     }
+
+    /// <summary>
+    /// Attempts to set movement of an entity. If it's the client player, sets the map to scroll.
+    /// </summary>
+    /// <param name="entity">Entity to set movement on.</param>
+    /// <param name="horizontal">Number of tiles to move along the horizontal.</param>
+    /// <param name="vertical">Number of tiles to move along the vertical.</param>
+    /// <param name="locomotion">Method of movement by terrain type</param>
+    /// <returns>Returns true if movement set successfully.</returns>
+    internal bool Move(Entity entity, Vector2 vector, TerrainTile.TerrainType locomotion = TerrainTile.TerrainType.Land)
+    {
+        float distance = vector.magnitude;// Vector2.Distance(entity.transform.position, (Vector2)entity.transform.position + direction);
+
+        // If obstacles in our way, ignore move
+        if (IsObstacle(entity, vector, distance))
+        {
+            return false;
+        }
+        
+        // If we can place the entity at new coordinates set movements
+        if (Place(entity, entity.coordinates.AtVector(vector)))
+        {
+            Attributes attributes = entity.GetComponent<Attributes>();
+
+            if (attributes & tileMapManager & worldManager)
+            {
+                float speed = worldManager.GetSpeed(entity.coordinates, attributes, locomotion);
+
+                // If entity is the player, scroll the map,
+                if (gameManager.player.entity == entity)
+                {
+                    tileMapManager.Scroll(vector, speed);
+                    return true;
+                }
+                // else set movement of the entity
+                else
+                {
+                    Movement movement = entity.GetComponent<Movement>();
+                    if (movement)
+                    {
+                        movementManager.Add(movement, vector, speed);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+
+    }
+
+    internal bool IsObstacle(Entity entity, Vector2 direction, float distance)
+    {
+        Collider2D collider = entity.GetComponent<Collider2D>();
+        RaycastHit2D[] hits = new RaycastHit2D[1];
+        if (collider.Raycast(direction, hits, distance) > 0)
+            return true;
+        else return false;
+    }
     
 
     /// <summary>
     /// Attempts to place an entity at given coordinates. 
     /// </summary>
     /// <param name="entity">An entity component</param>
-    /// <param name="coordinates">Map Coordinates</param>
+    /// <param name="coordinates">Map Coordinates</param> 
     /// <returns>True if successful, false if entity is null, or coordinates are occupied.</returns>
     internal bool Place(Entity entity, Coordinates coordinates)
     {
@@ -219,6 +279,7 @@ public class EntityManager : MonoBehaviour
                 if (entity.placed) mobs.Remove(entity.coordinates);
                 mobs.Add(coordinates, entity);
             }
+            // else if other entity types
 
             entity.coordinates = coordinates;
 
@@ -275,19 +336,5 @@ public class EntityManager : MonoBehaviour
             if (player.name == name) return player;
         }
         return null;
-    }
-
-    /// <summary>
-    /// Moves all entities in given horizontal and vertical tile spaces at given speed. Typically called by tile map scroller.
-    /// </summary>
-    /// <param name="horizontal">horizontal vectorin tile spaces</param>
-    /// <param name="vertical">vertical vector in tile spaces</param>
-    /// <param name="speed">Speed to move entities</param>
-    internal void SetMoveAll(int horizontal, int vertical, float speed)
-    {
-        foreach (Entity entity in mobs.Values)
-        {
-            movementManager.Add(entity.GetComponent<Movement>(), horizontal, vertical, speed);
-        }
     }
 }

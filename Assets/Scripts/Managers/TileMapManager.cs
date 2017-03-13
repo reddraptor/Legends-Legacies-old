@@ -195,25 +195,33 @@ public class TileMapManager : MonoBehaviour
     }
 
 
-    public void Scroll(int horizontal, int vertical)
+    public void Scroll(Vector2 vector)
     {
-        Scroll(horizontal, vertical, scrollSpeed);
+        Scroll(vector, scrollSpeed);
     }
 
-    public void Scroll(int horizontal, int vertical, float speed)
+    public void Scroll(Vector2 vector, float speed)
     {
         Movement mapMovement = tileMap.GetComponent<Movement>();
 
         if (!mapMovement.isMoving)
         {
 
-            ChangeFocus(new Coordinates(focus.inWorld.x + horizontal, focus.inWorld.y + vertical));
+            //ChangeFocus(new Coordinates(focus.inWorld.x + horizontal, focus.inWorld.y + vertical));
+            ChangeFocus(focus.AtVector(vector));
 
-            movementManager.Add(mapMovement, -horizontal, -vertical, speed);
-            movementManager.MoveEntities(-horizontal, -vertical, speed);
+            movementManager.Add(mapMovement, -vector, speed);
+            ScrollEntities(-vector, speed);
         }
     }
 
+    internal void ScrollEntities(Vector2 vector, float speed)
+    {
+        foreach (Entity entity in entityManager.mobCollection)
+        {
+            if (entity) movementManager.Add(entity.GetComponent<Movement>(), vector, speed);
+        }
+    }
 
     /// <summary>
     /// Changes the focus of the center of the view on to a different map location. If new chunks needed to be loaded, it will call for it.

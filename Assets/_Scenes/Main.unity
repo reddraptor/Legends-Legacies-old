@@ -165,10 +165,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fea50b0ebc6e19043ba657ec0b973122, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magnitude: 2
+  speed: 0
   horizontal: 0
   vertical: 0
   isMoving: 0
+  startPosition: {x: 0, y: 0}
+  vector: {x: 0, y: 0}
 --- !u!114 &87164917
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,6 +183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   placed: 0
+  entityType: 0
 --- !u!1 &164426076
 GameObject:
   m_ObjectHideFlags: 0
@@ -470,6 +473,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f14493b30c3e4144fae6ad5a5a19619c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementDelay: 0.0075
 --- !u!114 &1150027806
 MonoBehaviour:
   m_ObjectHideFlags: 0

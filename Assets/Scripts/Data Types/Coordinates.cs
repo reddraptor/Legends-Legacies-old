@@ -78,47 +78,47 @@ namespace Assets.Scripts.Data_Types
 
         public Coordinates North(int northward) 
         {
-            return Direction(0, northward);
+            return AtVector(Vector2.up * northward);
         }
 
         public Coordinates NorthEast(int northward, int eastward)
         {
-            return Direction(eastward, northward);
+            return AtVector(Vector2.right * eastward + Vector2.up * northward);
         }
 
         public Coordinates NorthWest(int northward, int westward)
         {
-            return Direction(-westward, northward);
+            return AtVector(Vector2.left * westward + Vector2.up * northward);
         }
 
         public Coordinates South(int southward)
         {
-            return Direction(0, -southward);
+            return AtVector(Vector2.down * southward);
         }
 
         public Coordinates SouthEast(int southward, int eastward)
         {
-            return Direction(eastward, -southward);
+            return AtVector(Vector2.right * eastward + Vector2.down * southward);
         }
 
         public Coordinates SouthWest(int southward, int westward)
         {
-            return Direction(-westward, -southward);
+            return AtVector(Vector2.left * westward + Vector2.down * southward);
         }
 
         public Coordinates East(int eastward)
         {
-            return Direction(eastward, 0);
+            return AtVector(Vector2.right * eastward);
         }
 
         public Coordinates West(int westward)
         {
-            return Direction(- westward, 0);
+            return AtVector(Vector2.left * westward);
         }
 
-        public Coordinates Direction(int horizontal, int vertical)
+        public Coordinates AtVector(Vector2 vector)
         {
-            return new Coordinates(this.inWorld.x + horizontal, this.inWorld.y + vertical);
+            return new Coordinates(this.inWorld.x + Mathf.FloorToInt(vector.x), this.inWorld.y + Mathf.FloorToInt(vector.y));
         }
 
         /// <summary>

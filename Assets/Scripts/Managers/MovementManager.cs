@@ -7,7 +7,7 @@ using System;
 [RequireComponent(typeof(GameManager))]
 public class MovementManager : MonoBehaviour
 {
-    HashSet<Movement> movements;
+    public float movementDelay = 0.0075f;
 
     public EntityManager entityManager
     {
@@ -18,7 +18,10 @@ public class MovementManager : MonoBehaviour
     {
         get { return GetComponent<TileMapManager>(); }
     }
-    
+
+    HashSet<Movement> movements;
+    private float timeSinceLastRun = 0;
+
     /* UNITY MESSAGES */
 
     // Awake is called when the script instance is being loaded
@@ -37,24 +40,33 @@ public class MovementManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        DoMoves();
+        timeSinceLastRun += Time.deltaTime;
+        if (timeSinceLastRun > movementDelay)
+        {
+            DoMoves();
+            timeSinceLastRun = 0;
+        }
     }
 
     /* METHODS */
-    public void Add(Movement movement, int horizontal, int vertical, float speed)
+    public void Add(Movement movement, Vector2 addVector, float speed)
     {
+        // If movement already in movement set, update movement vector
         if (movements.Contains(movement))
         {
-            float horizontalSpeed = movement.horizontal * movement.speed + horizontal * speed;
-            float verticalSpeed = movement.vertical * movement.speed + vertical * speed;
-            movement.speed = Mathf.Sqrt(Mathf.Pow(horizontalSpeed, 2) + Mathf.Pow(verticalSpeed, 2));
-            movement.horizontal += horizontal; 
-            movement.vertical += vertical;
-        }       
+            Vector2 currentSpeedVector = movement.vector.normalized * movement.speed;
+            Vector2 addSpeedVector = addVector.normalized * speed;
+
+            movement.speed = (currentSpeedVector + addSpeedVector).magnitude;
+            movement.vector += addVector;
+        }
+        // Else add new movement to movement set
         else
         {
-            movement.horizontal = horizontal; movement.vertical = vertical;
-            movement.speed = speed / Mathf.Sqrt(Mathf.Pow(horizontal, 2) + Mathf.Pow(vertical, 2));
+            movement.startPosition = movement.transform.position; //Set starting position to entity's current position
+            movement.vector = addVector;
+            //movement.speed = speed / movement.vector.magnitude;
+            movement.speed = speed;
             movements.Add(movement);
         }
     }
@@ -71,31 +83,25 @@ public class MovementManager : MonoBehaviour
 
     IEnumerator Move(Movement movement)
     {
+        if (movement == null) yield break;
+
         movement.isMoving = true;
-        Vector3 end = movement.transform.position;
+        Vector3 endPosition = movement.startPosition + movement.vector;
 
-        if (movement.horizontal < 0)
-            end.x -= 1.0f;
-        else if (movement.horizontal > 0)
-            end.x += 1.0f;
-
-        if (movement.vertical < 0)
-            end.y -= 1.0f;
-        else if (movement.vertical > 0)
-            end.y += 1.0f;
-
-        float sqrRemainingDistance = (movement.transform.position - end).sqrMagnitude;
+        float sqrRemainingDistance = (movement.transform.position - endPosition).sqrMagnitude;
 
         while (sqrRemainingDistance > float.Epsilon)
         {
             if (movement == null) yield break;
-            Vector3 newPosition = Vector3.MoveTowards(movement.transform.position, end, movement.speed * Time.deltaTime);
+            Vector3 newPosition = Vector3.MoveTowards(movement.transform.position, endPosition, movement.speed * Time.deltaTime);
             movement.rigidbody.MovePosition(newPosition);
-            sqrRemainingDistance = (movement.transform.position - end).sqrMagnitude;
+            endPosition = CurrentEndPosition(movement);
+            sqrRemainingDistance = (movement.transform.position - endPosition).sqrMagnitude;
             yield return null; 
         }
+
         movement.isMoving = false;
-        CorrectPosition(movement);
+        SnapToGrid(movement);
         
         // Start Debug Code
         if (movement)
@@ -125,15 +131,7 @@ public class MovementManager : MonoBehaviour
 
     }
 
-    internal void MoveEntities(int horizontal, int vertical, float speed)
-    {
-        foreach (Entity entity in entityManager.mobCollection)
-        {
-            if (entity) Add(entity.GetComponent<Movement>(), horizontal, vertical, speed);
-        }
-    }
-
-    private void CorrectPosition(Movement movement)
+    private void SnapToGrid(Movement movement)
     {
         if (!movement) return;
 
@@ -150,6 +148,8 @@ public class MovementManager : MonoBehaviour
 
     }
 
-
-
+    private Vector3 CurrentEndPosition(Movement movement)
+    {
+        return movement.startPosition + movement.vector;
+    }
 }

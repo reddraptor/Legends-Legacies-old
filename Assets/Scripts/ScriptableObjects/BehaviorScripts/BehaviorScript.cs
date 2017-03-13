@@ -12,44 +12,44 @@ namespace Assets.Scripts.ScriptableObjects.BehaviorScripts
 
         public abstract void Run(BehaviorManager behaviorManager);
 
-        public IntegerPair UnitVector(Direction direction)
+        public Vector2 DirectionVector(Direction direction)
         {
-            IntegerPair unitVector = new IntegerPair();
+            Vector2 directionVector = new Vector2();
 
             if (direction == Direction.North)
             {
-                unitVector.horizontal = 0; unitVector.vertical = 1;
+                directionVector.x = 0; directionVector.x = 1;
             }
             else if (direction == Direction.Northeast)
             {
-                unitVector.horizontal = 1; unitVector.vertical = 1;
+                directionVector.x = 1; directionVector.x = 1;
             }
             else if (direction == Direction.East)
             {
-                unitVector.horizontal = 1; unitVector.vertical = 0;
+                directionVector.x = 1; directionVector.x = 0;
             }
             else if (direction == Direction.Southeast)
             {
-                unitVector.horizontal = 1; unitVector.vertical = -1;
+                directionVector.x = 1; directionVector.x = -1;
             }
             else if (direction == Direction.South)
             {
-                unitVector.horizontal = 0; unitVector.vertical = -1;
+                directionVector.x = 0; directionVector.x = -1;
             }
             else if (direction == Direction.Southwest)
             {
-                unitVector.horizontal = -1; unitVector.vertical = -1;
+                directionVector.x = -1; directionVector.x = -1;
             }
             else if (direction == Direction.West)
             {
-                unitVector.horizontal = -1; unitVector.vertical = 0;
+                directionVector.x = -1; directionVector.x = 0;
             }
             else if (direction == Direction.Northwest)
             {
-                unitVector.horizontal = -1; unitVector.vertical = 1;
+                directionVector.x = -1; directionVector.x = 1;
             }
 
-            return unitVector;
+            return directionVector;
         }
 
         public Direction RandomDirection(System.Random random)

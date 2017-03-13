@@ -6,6 +6,7 @@ namespace Assets.Scripts.Components
     public class Behavior: MonoBehaviour
     {
         public IdleBehavior idlePrefab;
+        public bool isIdle;
 
         IdleBehavior iBehavior;
 

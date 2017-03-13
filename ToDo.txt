@@ -38,6 +38,8 @@ Early enemy implementation
 attributes
 -- component DONE
 -- early speed variable BUGFIXING
+MovementManager
+-Switch to a Vector2 in determining directions and distances DONE
 UI widgets
 combat system
 
@@ -73,10 +75,11 @@ Create UI widgets
 
 Entities
 --------
-Unique entity Ids
+Unique entity Ids -> used InstanceId()
 
 player/mobs/npc
 -------
+Switch to tags to denote EntityType??
 Speed modifiers by tile, props, status, etc
 sight(perception) system
 status effects

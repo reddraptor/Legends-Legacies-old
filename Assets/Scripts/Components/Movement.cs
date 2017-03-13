@@ -8,10 +8,9 @@ namespace Assets.Scripts.Components
     {
         /* EDITOR FIELDS */
         public float speed = 0f;
-        public int horizontal = 0;
-        public int vertical = 0;
         public bool isMoving = false;
-        
+        public Vector2 startPosition = Vector2.zero;
+        public Vector2 vector = Vector2.zero; //representing direction, with magnitude designating distance
 
         public Entity entity
         {

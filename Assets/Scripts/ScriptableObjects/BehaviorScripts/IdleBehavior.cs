@@ -14,23 +14,16 @@ namespace Assets.Scripts.ScriptableObjects.BehaviorScripts
         public override void Run(BehaviorManager behaviorManager)
         {
             bool makeMove = Roll(behaviorManager.randomizer, idleMovementPercentage);
-            IntegerPair unitVector;
+            Vector2 directionVector;
 
-            if (makeMove)
+            if (makeMove & behavior.isIdle)
             {
-                unitVector = UnitVector(RandomDirection(behaviorManager.randomizer));
+                behavior.isIdle = false;
+                directionVector = DirectionVector(RandomDirection(behaviorManager.randomizer));
 
-                if (behaviorManager.movementManager && behaviorManager.entityManager)
+                if (behaviorManager.entityManager)
                 {
-                    long newX = behavior.entity.coordinates.inWorld.x + unitVector.horizontal;
-                    long newY = behavior.entity.coordinates.inWorld.y + unitVector.vertical;
-
-                    if (behaviorManager.entityManager.Place(behavior.entity, new Coordinates(newX, newY)))
-                    {
-                        float speed = behaviorManager.worldManager.GetSpeed(behavior.entity.coordinates, behavior.attributes, TerrainTile.TerrainType.Land);
-                        behaviorManager.movementManager.Add(behavior.movement, unitVector.horizontal, unitVector.vertical, speed);
-                    }
-
+                    behaviorManager.entityManager.Move(behavior.entity, directionVector);
                 }
             }
 
