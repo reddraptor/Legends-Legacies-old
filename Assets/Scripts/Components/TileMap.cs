@@ -4,30 +4,46 @@ using System.Collections;
 namespace Assets.Scripts.Components
 {
     [RequireComponent(typeof(Movement))]
-    public class TileMap : MonoBehaviour
+    public class TileMap : Entity
     {
-        /* EDITOR FIELDS */
-
-
-        /* PRIVATE FIELDS */
         public GameObject[,] tileArray;
 
-        /* PROPERTIES */
-        public Movement movement
+        public new bool Show
         {
-            get
+            get { return show; }
+            set
             {
-                return GetComponent<Movement>();
+                SetTilesShow(value);
+                show = value;
             }
         }
 
-        /* UNITY MESSAGES */
+        private bool show = false;
 
-        // Use this for initialization
-        void Awake()
+        private void Awake()
         {
+            tag = "Map";
             tileArray = new GameObject[0, 0];
-            GetComponent<Entity>().type = EntityManager.EntityType.Map;
+
+        }
+
+        private void SetTilesShow(bool value)
+        {
+            if (tileArray != null)
+            {
+                for (int i = 0; i < tileArray.GetLength(0); i++)
+                {
+                    for (int j = 0; j < tileArray.GetLength(1); j++)
+                    {
+                        GameObject gO = tileArray[i, j];
+                        if (gO)
+                        {
+                            TerrainTile tile = gO.GetComponent<TerrainTile>();
+                            if (tile) tile.Show = value;
+                        }
+                    }
+                }
+            }
         }
 
     }

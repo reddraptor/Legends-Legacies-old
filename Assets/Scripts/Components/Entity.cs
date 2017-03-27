@@ -1,42 +1,79 @@
 ﻿using UnityEngine;
 using Assets.Scripts.Data_Types;
 using Assets.Scripts.Managers;
-using EntityType = EntityManager.EntityType;
 
 namespace Assets.Scripts.Components
 {
+    [DisallowMultipleComponent]
     public class Entity : MonoBehaviour
     {
         /* INSPECTOR FIELDS */
 
         /* PUBLIC FIELDS */
-        public Coordinates coordinates = new Coordinates(0, 0);
-
-        [HideInInspector] public bool placed = false;
+        //public Coordinates coordinates = new Coordinates(0, 0);
         public Chunk chunk = null;
-        
+        public IntegerPair tileIndices = new IntegerPair(0, 0);
 
-        /* PRIVATE FIELDS */
-
-        public EntityType entityType = EntityType.Undefined;
-
-        /* PROPERTIES */
-
-        public EntityType type
+        public Coordinates Coordinates
         {
-            get { return entityType; }
-            set
+            get
             {
-                if (entityType == EntityType.Undefined)
-                    entityType = value;
+                if (chunk != null)
+                    return new Coordinates(chunk, tileIndices);
+                else
+                    return new Coordinates();
             }
         }
 
-        public int instanceId
+        public bool Placed
         {
-            get { return GetInstanceID(); }
+            get { return placed; }
+            set
+            {
+                if (value)
+                {
+                    gameObject.layer = LayerMask.GetMask("Default");
+                    Show = true;
+                    placed = true;
+                }
+                else
+                {
+                    gameObject.layer = LayerMask.GetMask("Ignore Raycast");
+                    Show = false;
+                    placed = false;
+                }
+            }
         }
-        
+
+        public Vector2 Position
+        {
+            get
+            {
+                if (GetComponent<Rigidbody2D>())
+                    return GetComponent<Rigidbody2D>().position;
+                else return Vector2.zero;
+            }
+            set
+            {
+                if (GetComponent<Rigidbody2D>())
+                    GetComponent<Rigidbody2D>().position = value;
+            }
+        }
+
+        public string Type
+        {
+            get { return tag; }
+        }
+
+        public Movement Movement
+        {
+            get { return GetComponent<Movement>(); }
+        }
+
+        public Attributes Attributes
+        {
+            get { return GetComponent<Attributes>(); }
+        }
 
         public bool IsCentered
         {
@@ -47,17 +84,41 @@ namespace Assets.Scripts.Components
             }
         }
 
-        /* UNITY MESSAGES */
-        // Use this for initialization
-        void Start()
+        public bool Show 
         {
+            get
+            {
+                if (GetComponent<SpriteRenderer>())
+                    return GetComponent<SpriteRenderer>().enabled;
+                else return false;
+            }
+            set
+            {
+                if (GetComponent<SpriteRenderer>())
+                    GetComponent<SpriteRenderer>().enabled = value;
+            }
         }
 
-        // Update is called once per frame
-        void Update()
-        {
+        private bool placed = false;
 
+        public override string ToString()
+        {
+            return name + GetInstanceID() + " (" + Type + ")";
         }
+
+        public override int GetHashCode()
+        {
+            return GetInstanceID();
+        }
+
+        public override bool Equals(object other)
+        {
+            if (other is Entity)
+            {
+                if (this.GetInstanceID() == ((Entity)other).GetInstanceID()) return true;
+            }
+            return false;
+        }
+
     }
-
 }

@@ -16,7 +16,7 @@ namespace Assets.Scripts.Data_Types
 
         public LoadedChunks(World world)
         {
-            chunkArray = new Chunk[world.loadedChunkWidth, world.loadedChunkWidth];
+            chunkArray = new Chunk[world.LoadedChunkWidth, world.LoadedChunkWidth];
             chunkSet = new HashSet<Chunk>();
         }
     }

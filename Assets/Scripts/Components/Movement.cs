@@ -8,35 +8,31 @@ namespace Assets.Scripts.Components
     {
         /* EDITOR FIELDS */
         public float speed = 0f;
-        public bool isMoving = false;
-        public Vector2 startPosition = Vector2.zero;
-        public Vector2 vector = Vector2.zero; //representing direction, with magnitude designating distance
 
-        public Entity entity
+        internal bool isActive = false;
+        internal Vector2 startPosition = Vector2.zero;
+        internal Vector2 vector = Vector2.zero; //representing direction, with magnitude designating distance
+
+        internal Entity Entity
         {
             get { return GetComponent<Entity>(); }
         }
 
         /* PRIVATE FIELDS */
-        Rigidbody2D rb;
         
-
-        
-        public Coordinates coordinates
+        internal Coordinates Coordinates
         {
-            get { return entity.coordinates; }
+            get { return Entity.Coordinates; }
         }
 
-        public new Rigidbody2D rigidbody
-        {
-            get { return rb; }
-        }
+        internal new Rigidbody2D rigidbody;
+
 
         /* UNITY MESSAGES */
         // Awake is called when the script instance is being loaded
         private void Awake()
         {
-            rb = GetComponent<Rigidbody2D>();
+            rigidbody = GetComponent<Rigidbody2D>();
         }
 
         // Use this for initialization
@@ -47,6 +43,12 @@ namespace Assets.Scripts.Components
         // Update is called once per frame
         void Update()
         {
+
+        }
+
+        public override string ToString()
+        {
+            return "Entity: " + Entity + "; Start: " + startPosition + "; Vector: " + vector + "; Speed: " + speed;
 
         }
     }

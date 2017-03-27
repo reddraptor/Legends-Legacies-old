@@ -22,7 +22,6 @@ public class MapGenerator : ScriptableObject
     /* UNITY MESSAGES */
     private void OnEnable()
     {
-        Debug.Log("Generator Enabled.");
         binaryMatrix = new bool[3 * chunkTileWidth, 3 * chunkTileWidth];
         generatorMatrix = new System.Random[3, 3];
         elevationMap = new ChunkElevation[3, 3];
@@ -65,8 +64,8 @@ public class MapGenerator : ScriptableObject
                 if (elevationMap[i, j].Mean > mapGenerationData.mountainElevationMinimum)
                 {
                     AddAmorphousShape(
-                        i * chunkTileWidth + elevationMap[i, j].Slope.x,
-                        j * chunkTileWidth + elevationMap[i, j].Slope.y,
+                        i * chunkTileWidth + elevationMap[i, j].Slope.X,
+                        j * chunkTileWidth + elevationMap[i, j].Slope.Y,
                         Mathf.RoundToInt((float)elevationMap[i, j].Mean / (float)mapGenerationData.mountainElevationMinimum * chunkTileWidth * 2),
                         generatorMatrix[i, j]);
                 }
@@ -88,7 +87,7 @@ public class MapGenerator : ScriptableObject
         {
             for (int j = 0; j < generatorMatrix.GetLength(1); j++)
             {
-                int chunkSeed = (int)(seed + chunkLocation.x - 1 + i + Mathf.RoundToInt(Mathf.Pow(chunkLocation.y - 1 + j, 2)));
+                int chunkSeed = (int)(seed + chunkLocation.X - 1 + i + Mathf.RoundToInt(Mathf.Pow(chunkLocation.Y - 1 + j, 2)));
                 generatorMatrix[i, j] = new System.Random(chunkSeed);
             }
         }
@@ -118,8 +117,8 @@ public class MapGenerator : ScriptableObject
                 {
                     //binaryMatrix[i * Chunk.TileWidth + elevationMap[i, j].Slope.X, j * Chunk.TileWidth + elevationMap[i, j].Slope.Y] = true;
                     AddAmorphousShape(
-                        i * chunkTileWidth + elevationMap[i, j].Slope.x,
-                        j * chunkTileWidth + elevationMap[i, j].Slope.y,
+                        i * chunkTileWidth + elevationMap[i, j].Slope.X,
+                        j * chunkTileWidth + elevationMap[i, j].Slope.Y,
                         Mathf.RoundToInt((float)elevationMap[i, j].Mean / (float)mapGenerationData.waterBodyElevationMax * chunkTileWidth * 2),
                         generatorMatrix[i, j]);
                 }
@@ -236,19 +235,19 @@ public class MapGenerator : ScriptableObject
                     {
                         if (lowest == northElevation)
                         {
-                            start = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.x + northElevation.Slope.x) / 2), chunkTileWidth - 1);
+                            start = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.X + northElevation.Slope.X) / 2), chunkTileWidth - 1);
                         }
                         else if (lowest == eastElevation)
                         {
-                            start = new IntegerPair(chunkTileWidth - 1, Mathf.RoundToInt((centerElevation.Slope.y + northElevation.Slope.y) / 2));
+                            start = new IntegerPair(chunkTileWidth - 1, Mathf.RoundToInt((centerElevation.Slope.Y + northElevation.Slope.Y) / 2));
                         }
                         else if (lowest == southElevation)
                         {
-                            start = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.x + northElevation.Slope.x) / 2), 0);
+                            start = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.X + northElevation.Slope.X) / 2), 0);
                         }
                         else if (lowest == westElevation)
                         {
-                            start = new IntegerPair(0, Mathf.RoundToInt((centerElevation.Slope.y + northElevation.Slope.y) / 2));
+                            start = new IntegerPair(0, Mathf.RoundToInt((centerElevation.Slope.Y + northElevation.Slope.Y) / 2));
                         }
                         else
                         {
@@ -261,19 +260,19 @@ public class MapGenerator : ScriptableObject
                     {
                         if (lowest == northElevation)
                         {
-                            end = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.x + northElevation.Slope.x) / 2), chunkTileWidth - 1);
+                            end = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.X + northElevation.Slope.X) / 2), chunkTileWidth - 1);
                         }
                         else if (lowest == eastElevation)
                         {
-                            end = new IntegerPair(chunkTileWidth - 1, Mathf.RoundToInt((centerElevation.Slope.y + northElevation.Slope.y) / 2));
+                            end = new IntegerPair(chunkTileWidth - 1, Mathf.RoundToInt((centerElevation.Slope.Y + northElevation.Slope.Y) / 2));
                         }
                         else if (lowest == southElevation)
                         {
-                            end = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.x + northElevation.Slope.x) / 2), 0);
+                            end = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.X + northElevation.Slope.X) / 2), 0);
                         }
                         else if (lowest == westElevation)
                         {
-                            end = new IntegerPair(0, Mathf.RoundToInt((centerElevation.Slope.y + northElevation.Slope.y) / 2));
+                            end = new IntegerPair(0, Mathf.RoundToInt((centerElevation.Slope.Y + northElevation.Slope.Y) / 2));
                         }
                         else
                         {
@@ -294,26 +293,26 @@ public class MapGenerator : ScriptableObject
                             if (lowest == northElevation)
                             {
                                 start = new IntegerPair(
-                                    Mathf.RoundToInt((centerElevation.Slope.x + northElevation.Slope.x) / 2),
+                                    Mathf.RoundToInt((centerElevation.Slope.X + northElevation.Slope.X) / 2),
                                     chunkTileWidth - 1);
                             }
                             else if (lowest == eastElevation)
                             {
                                 start = new IntegerPair(
                                     chunkTileWidth - 1,
-                                    Mathf.RoundToInt((centerElevation.Slope.y + northElevation.Slope.y) / 2));
+                                    Mathf.RoundToInt((centerElevation.Slope.Y + northElevation.Slope.Y) / 2));
                             }
                             else if (lowest == southElevation)
                             {
                                 start = new IntegerPair(
-                                    Mathf.RoundToInt((centerElevation.Slope.x + northElevation.Slope.x) / 2),
+                                    Mathf.RoundToInt((centerElevation.Slope.X + northElevation.Slope.X) / 2),
                                     0);
                             }
                             else if (lowest == westElevation)
                             {
                                 start = new IntegerPair(
                                     0,
-                                    Mathf.RoundToInt((centerElevation.Slope.y + northElevation.Slope.y) / 2));
+                                    Mathf.RoundToInt((centerElevation.Slope.Y + northElevation.Slope.Y) / 2));
                             }
                             else
                             {
@@ -326,19 +325,19 @@ public class MapGenerator : ScriptableObject
                         {
                             if (lowest == northElevation)
                             {
-                                end = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.x + northElevation.Slope.x) / 2), Mathf.RoundToInt((centerElevation.Slope.y + chunkTileWidth - 1) / 2));
+                                end = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.X + northElevation.Slope.X) / 2), Mathf.RoundToInt((centerElevation.Slope.Y + chunkTileWidth - 1) / 2));
                             }
                             else if (lowest == eastElevation)
                             {
-                                end = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.x + chunkTileWidth - 1) / 2), Mathf.RoundToInt((centerElevation.Slope.y + northElevation.Slope.y) / 2));
+                                end = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.X + chunkTileWidth - 1) / 2), Mathf.RoundToInt((centerElevation.Slope.Y + northElevation.Slope.Y) / 2));
                             }
                             else if (lowest == southElevation)
                             {
-                                end = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.x + northElevation.Slope.x) / 2), Mathf.RoundToInt((centerElevation.Slope.y) / 2));
+                                end = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.X + northElevation.Slope.X) / 2), Mathf.RoundToInt((centerElevation.Slope.Y) / 2));
                             }
                             else if (lowest == westElevation)
                             {
-                                end = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.x) / 2), Mathf.RoundToInt((centerElevation.Slope.y + northElevation.Slope.y) / 2));
+                                end = new IntegerPair(Mathf.RoundToInt((centerElevation.Slope.X) / 2), Mathf.RoundToInt((centerElevation.Slope.Y + northElevation.Slope.Y) / 2));
                             }
                             else
                             {
@@ -361,15 +360,15 @@ public class MapGenerator : ScriptableObject
                     {
                         //Draw Main Branch
                         DrawRiver(
-                            new IntegerPair(chunkTileWidth * i + riverValley.Main.Start.x, chunkTileWidth * j + riverValley.Main.Start.y),
-                            new IntegerPair(chunkTileWidth * i + riverValley.Main.End.x, chunkTileWidth * j + riverValley.Main.End.y),
+                            new IntegerPair(chunkTileWidth * i + riverValley.Main.Start.X, chunkTileWidth * j + riverValley.Main.Start.Y),
+                            new IntegerPair(chunkTileWidth * i + riverValley.Main.End.X, chunkTileWidth * j + riverValley.Main.End.Y),
                             generatorMatrix[i, j]);
                     }
                     for (int source = 0; source < riverValley.SourceCount; source++)
                     {
                         DrawRiver(
-                            new IntegerPair(chunkTileWidth * i + riverValley.Source(source).Start.x, chunkTileWidth * j + riverValley.Source(source).Start.y),
-                            new IntegerPair(chunkTileWidth * i + riverValley.Source(source).End.x, chunkTileWidth * j + riverValley.Source(source).End.y),
+                            new IntegerPair(chunkTileWidth * i + riverValley.Source(source).Start.X, chunkTileWidth * j + riverValley.Source(source).Start.Y),
+                            new IntegerPair(chunkTileWidth * i + riverValley.Source(source).End.X, chunkTileWidth * j + riverValley.Source(source).End.Y),
                             generatorMatrix[i, j]);
                     }
                 }
@@ -382,50 +381,50 @@ public class MapGenerator : ScriptableObject
 
     void DrawRiverHorizontal(IntegerPair start, IntegerPair end, System.Random generator)
     {
-        if (end.x - start.x > 0)
-            DrawRiver(new IntegerPair(start.x + 1, start.y), end, generator);
+        if (end.X - start.X > 0)
+            DrawRiver(new IntegerPair(start.X + 1, start.Y), end, generator);
 
-        else if (end.x - start.x < 0)
-            DrawRiver(new IntegerPair(start.x - 1, start.y), end, generator);
+        else if (end.X - start.X < 0)
+            DrawRiver(new IntegerPair(start.X - 1, start.Y), end, generator);
 
         else
         {
             if (generator.Next(2) == 1)
-                DrawRiver(new IntegerPair(start.x + 1, start.y), end, generator);
+                DrawRiver(new IntegerPair(start.X + 1, start.Y), end, generator);
 
             else
-                DrawRiver(new IntegerPair(start.x - 1, start.y), end, generator);
+                DrawRiver(new IntegerPair(start.X - 1, start.Y), end, generator);
         }
     }
 
     void DrawRiverVertical(IntegerPair start, IntegerPair end, System.Random generator)
     {
-        if (end.y - start.y > 0)
-            DrawRiver(new IntegerPair(start.x, start.y + 1), end, generator);
+        if (end.Y - start.Y > 0)
+            DrawRiver(new IntegerPair(start.X, start.Y + 1), end, generator);
 
-        else if (end.y - start.y < 0)
-            DrawRiver(new IntegerPair(start.x, start.y - 1), end, generator);
+        else if (end.Y - start.Y < 0)
+            DrawRiver(new IntegerPair(start.X, start.Y - 1), end, generator);
 
         else
         {
             if (generator.Next(2) == 1)
-                DrawRiver(new IntegerPair(start.x, start.y + 1), end, generator);
+                DrawRiver(new IntegerPair(start.X, start.Y + 1), end, generator);
 
             else
-                DrawRiver(new IntegerPair(start.x, start.y - 1), end, generator);
+                DrawRiver(new IntegerPair(start.X, start.Y - 1), end, generator);
         }
     }
 
     private void DrawRiver(IntegerPair start, IntegerPair end, System.Random generator)
     {
-        if (start.x == end.x && start.y == end.y)
+        if (start.X == end.X && start.Y == end.Y)
         {
-            binaryMatrix[start.x, start.y] = true;
+            binaryMatrix[start.X, start.Y] = true;
             return;
         }
 
-        if (start.x >= 0 && start.y >= 0 && start.x < binaryMatrix.GetLength(0) && start.y < binaryMatrix.GetLength(1))
-            binaryMatrix[start.x, start.y] = true;
+        if (start.X >= 0 && start.Y >= 0 && start.X < binaryMatrix.GetLength(0) && start.Y < binaryMatrix.GetLength(1))
+            binaryMatrix[start.X, start.Y] = true;
 
         if (generator.Next(2) == 1)
             DrawRiverHorizontal(start, end, generator);
@@ -656,13 +655,13 @@ public class MapGenerator : ScriptableObject
 
     bool OnChunkEdge(LocalChunkCoordinates localCoordinates, Direction direction)
     {
-        if (localCoordinates.i == 0 && direction == Direction.West)
+        if (localCoordinates.I == 0 && direction == Direction.West)
             return true;
-        else if (localCoordinates.i == chunkTileWidth - 1 && direction == Direction.East)
+        else if (localCoordinates.I == chunkTileWidth - 1 && direction == Direction.East)
             return true;
-        else if (localCoordinates.j == 0 && direction == Direction.South)
+        else if (localCoordinates.J == 0 && direction == Direction.South)
             return true;
-        else if (localCoordinates.j == chunkTileWidth - 1 && direction == Direction.North)
+        else if (localCoordinates.J == chunkTileWidth - 1 && direction == Direction.North)
             return true;
         else return false;
 
@@ -748,29 +747,29 @@ public class MapGenerator : ScriptableObject
     /// <returns></returns>
     bool AdjacentIsTrue(IntegerPair indices, Direction direction)
     {
-        if (direction == Direction.North && indices.j < binaryMatrix.GetLength(1) - 1)
-            return (binaryMatrix[indices.i, indices.j + 1]);
+        if (direction == Direction.North && indices.J < binaryMatrix.GetLength(1) - 1)
+            return (binaryMatrix[indices.I, indices.J + 1]);
 
-        else if (direction == Direction.Northeast && indices.j < binaryMatrix.GetLength(1) - 1 && indices.i < binaryMatrix.GetLength(0) - 1)
-            return (binaryMatrix[indices.i + 1, indices.j + 1]);
+        else if (direction == Direction.Northeast && indices.J < binaryMatrix.GetLength(1) - 1 && indices.I < binaryMatrix.GetLength(0) - 1)
+            return (binaryMatrix[indices.I + 1, indices.J + 1]);
 
-        else if (direction == Direction.East && indices.i < binaryMatrix.GetLength(0) - 1)
-            return (binaryMatrix[indices.i + 1, indices.j]);
+        else if (direction == Direction.East && indices.I < binaryMatrix.GetLength(0) - 1)
+            return (binaryMatrix[indices.I + 1, indices.J]);
 
-        else if (direction == Direction.Southeast && indices.i < binaryMatrix.GetLength(0) - 1 && indices.j > 0)
-            return (binaryMatrix[indices.i + 1, indices.j - 1]);
+        else if (direction == Direction.Southeast && indices.I < binaryMatrix.GetLength(0) - 1 && indices.J > 0)
+            return (binaryMatrix[indices.I + 1, indices.J - 1]);
 
-        else if (direction == Direction.South && indices.j > 0)
-            return (binaryMatrix[indices.i, indices.j - 1]);
+        else if (direction == Direction.South && indices.J > 0)
+            return (binaryMatrix[indices.I, indices.J - 1]);
 
-        else if (direction == Direction.Southwest && indices.j > 0 && indices.i > 0)
-            return (binaryMatrix[indices.i - 1, indices.j - 1]);
+        else if (direction == Direction.Southwest && indices.J > 0 && indices.I > 0)
+            return (binaryMatrix[indices.I - 1, indices.J - 1]);
 
-        else if (direction == Direction.West && indices.i > 0)
-            return (binaryMatrix[indices.i - 1, indices.j]);
+        else if (direction == Direction.West && indices.I > 0)
+            return (binaryMatrix[indices.I - 1, indices.J]);
 
-        else if (direction == Direction.Northwest && indices.j < binaryMatrix.GetLength(1) - 1 && indices.i > 0)
-            return (binaryMatrix[indices.i - 1, indices.j + 1]);
+        else if (direction == Direction.Northwest && indices.J < binaryMatrix.GetLength(1) - 1 && indices.I > 0)
+            return (binaryMatrix[indices.I - 1, indices.J + 1]);
 
         else return false;
     }

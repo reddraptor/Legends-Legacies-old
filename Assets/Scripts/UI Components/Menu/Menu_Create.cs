@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine.UI;
+using Assets.Scripts.Managers;
 
 namespace Assets.Scripts.UI_Components.Menu
 {
@@ -26,7 +27,7 @@ namespace Assets.Scripts.UI_Components.Menu
 
         public void OnCreateWorld()
         {
-            if (seedField & worldManager) worldManager.world.seed = ConvertTextToSeed(seedField.text);
+            if (seedField & worldManager) worldManager.Seed = ConvertTextToSeed(seedField.text);
             if (gameManager) gameManager.BeginGame();
             if (mainMenu) mainMenu.saveEnabled = true;
             if (menuManager) menuManager.Close(this);

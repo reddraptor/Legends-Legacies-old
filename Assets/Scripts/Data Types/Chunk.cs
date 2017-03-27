@@ -31,7 +31,12 @@ namespace Assets.Scripts.Data_Types
             this.tileArray = tileArray;
             entitySet = new HashSet<Entity>();
         }
-        
+
+        public override string ToString()
+        {
+            return "(" + lowerLeft.InChunks.X + ", " + lowerLeft.InChunks.Y + ")";
+        }
+
     }
 
 }

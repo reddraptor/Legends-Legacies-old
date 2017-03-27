@@ -1,69 +1,73 @@
 ﻿public struct IntegerPair
 {
-    private int intX;
-    private int intY;
+    public int x;
+    public int y;
 
-    public int x
+    public int X
     {
         get
         {
-            return intX;
+            return x;
         }
         set
         {
-            intX = value;
+            x = value;
         }
     }
-    public int y
+    public int Y
     {
         get
         {
-            return intY;
+            return y;
         }
         set
         {
-            intY = value;
+            y = value;
         }
     }
-    public int i
+    public int I
     {
         get
         {
-            return intX;
+            return x;
         }
         set
         {
-            intX = value;
+            x = value;
         }
     }
-    public int j
+    public int J
     {
         get
         {
-            return intY;
+            return y;
         }
         set
         {
-            intY = value;
+            y = value;
         }
-    }
-
-    public int horizontal
-    {
-        get { return intX; }
-        set { intX = value; }
     }
 
-    public int vertical
+    public int Horizontal
     {
-        get { return intY; }
-        set { intY = value; }
+        get { return x; }
+        set { x = value; }
+    }
+
+    public int Vertical
+    {
+        get { return y; }
+        set { y = value; }
     }
 
     public IntegerPair(int x, int y)
     {
-        this.intX = x;
-        this.intY = y;
+        this.x = x;
+        this.y = y;
     }
 
+    public override string ToString()
+    {
+        return "(" + X + ", " + Y + ")";
+    }
 }

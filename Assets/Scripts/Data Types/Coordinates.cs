@@ -17,12 +17,18 @@ namespace Assets.Scripts.Data_Types
         ChunkCoordinates chunk;
         static int chunkTileWidth = Chunk.chunkTileWidth;
 
-        public WorldCoordinates inWorld
+        /// <summary>
+        /// Map Coordinates in world notation (x, y) 
+        /// </summary>
+        public WorldCoordinates InWorld
         {
             get { return world; }
         }
 
-        public ChunkCoordinates inChunks
+        /// <summary>
+        /// Map coordinates in chunk notation (x, y: i, j)
+        /// </summary>
+        public ChunkCoordinates InChunks
         {
             get { return chunk; }
         }
@@ -76,6 +82,12 @@ namespace Assets.Scripts.Data_Types
             world = new WorldCoordinates(chunk);
         }
 
+        public Coordinates(Chunk chunk, IntegerPair tileIndices)
+        {
+            world = new WorldCoordinates(chunk.lowerLeft.InChunks.X * Chunk.chunkTileWidth + tileIndices.I, chunk.lowerLeft.InChunks.Y * Chunk.chunkTileWidth + tileIndices.J);
+            this.chunk = new ChunkCoordinates(world);
+        }
+
         public Coordinates North(int northward) 
         {
             return AtVector(Vector2.up * northward);
@@ -118,7 +130,7 @@ namespace Assets.Scripts.Data_Types
 
         public Coordinates AtVector(Vector2 vector)
         {
-            return new Coordinates(this.inWorld.x + Mathf.FloorToInt(vector.x), this.inWorld.y + Mathf.FloorToInt(vector.y));
+            return new Coordinates(this.InWorld.X + Mathf.FloorToInt(vector.x), this.InWorld.Y + Mathf.FloorToInt(vector.y));
         }
 
         /// <summary>
@@ -128,41 +140,41 @@ namespace Assets.Scripts.Data_Types
         /// </summary>
         public struct WorldCoordinates
         {
-            private long _x;
-            private long _y;
+            private long x;
+            private long y;
 
-            public long x
+            public long X
             {
-                get { return _x; }
+                get { return x; }
             }
 
-            public long y
+            public long Y
             {
-                get { return _y; }
+                get { return y; }
             }
 
             public WorldCoordinates(long x, long y)
             {
-                _x = x;
-                _y = y;
+                this.x = x;
+                this.y = y;
             }
 
             public WorldCoordinates(ChunkCoordinates chunk)
             {
-                if (chunk.x >= 0)
-                    _x = chunk.x * chunkTileWidth + chunk.i;
+                if (chunk.X >= 0)
+                    x = chunk.X * chunkTileWidth + chunk.I;
                 else
-                    _x = ((chunk.x + 1) * chunkTileWidth) + (chunk.i - chunkTileWidth);
+                    x = ((chunk.X + 1) * chunkTileWidth) + (chunk.I - chunkTileWidth);
 
-                if (chunk.y >= 0)
-                    _y = chunk.y * chunkTileWidth + chunk.j;
+                if (chunk.Y >= 0)
+                    y = chunk.Y * chunkTileWidth + chunk.J;
                 else
-                    _y = ((chunk.y + 1) * chunkTileWidth) + (chunk.j - chunkTileWidth);
+                    y = ((chunk.Y + 1) * chunkTileWidth) + (chunk.J - chunkTileWidth);
             }
 
             public override string ToString()
             {
-                return "(" + x.ToString() + ", " + y.ToString() + ")";
+                return "(" + X.ToString() + ", " + Y.ToString() + ")";
             }
 
             /// <summary>
@@ -175,11 +187,11 @@ namespace Assets.Scripts.Data_Types
             {
                 if (obj == null) return false;
 
-                if (obj.GetType() == typeof(WorldCoordinates))
+                if (obj is WorldCoordinates)
                 {
                     WorldCoordinates test = (WorldCoordinates)obj;
 
-                    if (x == test.x && y == test.y) return true;
+                    if (X == test.X && Y == test.Y) return true;
                 }
                 return false;
             }
@@ -193,8 +205,8 @@ namespace Assets.Scripts.Data_Types
                 {
                     long hash = prime1;
 
-                    hash = hash * prime2 + x;
-                    hash = hash * prime2 + y;
+                    hash = hash * prime2 + X;
+                    hash = hash * prime2 + Y;
                     return (int)hash;
                 }
             }
@@ -207,12 +219,7 @@ namespace Assets.Scripts.Data_Types
             /// <returns>A boolean indictating equality.</returns>
             public static bool operator ==(WorldCoordinates Coord1, WorldCoordinates Coord2)
             {
-                if (Coord1 == null)
-                {
-                    if (Coord2 == null) return true;
-                    else return false;
-                }
-                else return Coord1.Equals(Coord2);
+                return Coord1.Equals(Coord2);
             }
 
             public static bool operator !=(WorldCoordinates Coord1, WorldCoordinates Coord2)
@@ -229,68 +236,68 @@ namespace Assets.Scripts.Data_Types
         /// </summary>
         public struct ChunkCoordinates
         {
-            private long _x;
-            private long _y;
-            private int _i;
-            private int _j;
+            private long x;
+            private long y;
+            private int i;
+            private int j;
 
-            public long x
+            public long X
             {
-                get { return _x; }
+                get { return x; }
             }
 
-            public long y
+            public long Y
             {
-                get { return _y; }
+                get { return y; }
             }
 
-            public int i
+            public int I
             {
-                get { return _i; }
+                get { return i; }
             }
 
-            public int j
+            public int J
             {
-                get { return _j; }
+                get { return j; }
             }
 
             public ChunkCoordinates(long x, long y, int i, int j)
             {
-                _x = x;
-                _y = y;
-                _i = i;
-                _j = j;
+                this.x = x;
+                this.y = y;
+                this.i = i;
+                this.j = j;
             }
 
             public ChunkCoordinates(WorldCoordinates world)
             {
-                if (world.x >= 0)
+                if (world.X >= 0)
                 {
-                    _x = Mathf.FloorToInt(world.x / chunkTileWidth);
-                    _i = (int)(world.x - _x * chunkTileWidth);
+                    x = Mathf.FloorToInt(world.X / chunkTileWidth);
+                    i = (int)(world.X - x * chunkTileWidth);
                 }
                 else
                 {
-                    _x = Mathf.CeilToInt((world.x + 1) / chunkTileWidth) - 1;
-                    _i = (int)((chunkTileWidth - 1) + (world.x + 1) - (_x + 1) * chunkTileWidth);
+                    x = Mathf.CeilToInt((world.X + 1) / chunkTileWidth) - 1;
+                    i = (int)((chunkTileWidth - 1) + (world.X + 1) - (x + 1) * chunkTileWidth);
                 }
 
-                if (world.y >= 0)
+                if (world.Y >= 0)
                 {
-                    _y = Mathf.FloorToInt(world.y / chunkTileWidth);
-                    _j = (int)(world.y - _y * chunkTileWidth);
+                    y = Mathf.FloorToInt(world.Y / chunkTileWidth);
+                    j = (int)(world.Y - y * chunkTileWidth);
                 }
                 else
                 {
-                    _y = Mathf.CeilToInt((world.y + 1) / chunkTileWidth) - 1;
-                    _j = (int)((chunkTileWidth - 1) + (world.y + 1) - (_y + 1) * chunkTileWidth);
+                    y = Mathf.CeilToInt((world.Y + 1) / chunkTileWidth) - 1;
+                    j = (int)((chunkTileWidth - 1) + (world.Y + 1) - (y + 1) * chunkTileWidth);
                 }
 
             }
-
+            
             public override string ToString()
             {
-                return "(" + x.ToString() + ", " + y.ToString() + "; " + i.ToString() + ", " + j.ToString() + ")";
+                return "(" + X.ToString() + ", " + Y.ToString() + ": " + I.ToString() + ", " + J.ToString() + ")";
             }
 
             /// <summary>
@@ -302,11 +309,11 @@ namespace Assets.Scripts.Data_Types
             public override bool Equals(object obj)
             {
                 if (obj == null) return false;
-                if (obj.GetType() == typeof(ChunkCoordinates))
+                if (obj is ChunkCoordinates)
                 {
                     ChunkCoordinates test = (ChunkCoordinates)obj;
 
-                    if (x == test.x && y == test.y && i == test.i && j == test.j) return true;
+                    if (X == test.X && Y == test.Y && I == test.I && J == test.J) return true;
                 }
                 return false;
             }
@@ -320,22 +327,17 @@ namespace Assets.Scripts.Data_Types
                 {
                     long hash = prime1;
 
-                    hash = hash * prime2 + x;
-                    hash = hash * prime2 + y;
-                    hash = hash * prime2 + i;
-                    hash = hash * prime2 + j;
+                    hash = hash * prime2 + X;
+                    hash = hash * prime2 + Y;
+                    hash = hash * prime2 + I;
+                    hash = hash * prime2 + J;
                     return (int)hash;
                 }
             }
 
             public static bool operator ==(ChunkCoordinates Coord1, ChunkCoordinates Coord2)
             {
-                if (Coord1 == null)
-                {
-                    if (Coord2 == null) return true;
-                    else return false;
-                }
-                else return Coord1.Equals(Coord2);
+                return Coord1.Equals(Coord2);
             }
 
             public static bool operator !=(ChunkCoordinates Coord1, ChunkCoordinates Coord2)
@@ -352,15 +354,15 @@ namespace Assets.Scripts.Data_Types
 
         public float Range(Coordinates otherCoords)
         {
-            float diffX = otherCoords.inWorld.x - inWorld.x;
-            float diffY = otherCoords.inWorld.y - inWorld.y;
+            float diffX = otherCoords.InWorld.X - InWorld.X;
+            float diffY = otherCoords.InWorld.Y - InWorld.Y;
 
             return Hypotenuse(diffX, diffY);
         }
 
         public override string ToString()
         {
-            return inWorld.ToString() + ":" + inChunks.ToString();
+            return InWorld.ToString() + "; " + InChunks.ToString();
         }
 
         /// <summary>
@@ -373,11 +375,11 @@ namespace Assets.Scripts.Data_Types
         {
             if (obj == null) return false;
 
-            if (obj.GetType() == typeof(Coordinates))
+            if (obj is Coordinates)
             {
                 Coordinates test = (Coordinates)obj;
 
-                if (inChunks.Equals(test.inChunks)) return true;
+                if (InChunks.Equals(test.InChunks)) return true;
             }
             return false;
         }
@@ -389,12 +391,7 @@ namespace Assets.Scripts.Data_Types
 
         public static bool operator ==(Coordinates Coord1, Coordinates Coord2)
         {
-            if (Coord1 == null)
-            {
-                if (Coord2 == null) return true;
-                else return false;
-            }
-            else return Coord1.Equals(Coord2);
+            return Coord1.Equals(Coord2);
         }
 
         public static bool operator !=(Coordinates Coord1, Coordinates Coord2)

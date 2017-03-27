@@ -38,8 +38,22 @@ Early enemy implementation
 attributes
 -- component DONE
 -- early speed variable BUGFIXING
+
+Entities
+------
+Make Player, Mob, TerrainTile subtypes of entity DONE
+Newly instanced entities should not be seen by raycasts until placed DONE
+
+
+Add ScreenManager - move handling of screen position of gameobjects and camera to this DONE
+
 MovementManager
+---------------
 -Switch to a Vector2 in determining directions and distances DONE
+
+Bugfixing to components up to this point
+
+
 UI widgets
 combat system
 

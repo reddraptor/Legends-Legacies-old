@@ -16,9 +16,9 @@ namespace Assets.Scripts.Data_Types.Serialization
             if (player)
             {
                 name = player.name;
-                sightRange = player.attributes.sightRange;
-                coordX = entity.coordinates.inWorld.x;
-                coordY = entity.coordinates.inWorld.y;
+                sightRange = player.Attributes.SightRange;
+                coordX = entity.Coordinates.InWorld.X;
+                coordY = entity.Coordinates.InWorld.Y;
             }
         }
          
@@ -27,7 +27,7 @@ namespace Assets.Scripts.Data_Types.Serialization
             Player player = entity.GetComponent<Player>();
             if (player)
             {
-                entity.coordinates = new Coordinates(coordX, coordY);
+               // entity.coordinates = new Coordinates(coordX, coordY);
                 //player.attributes.sightRange = sightRange;
                 player.name = name;
             }

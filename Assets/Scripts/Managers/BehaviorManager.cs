@@ -8,29 +8,39 @@ namespace Assets.Scripts.Managers
     public class BehaviorManager : MonoBehaviour
     {
 
-        public System.Random randomizer;
+        internal System.Random randomizer;
 
-        public EntityManager entityManager 
-        {
-            get { return GetComponent<EntityManager>(); }
-        }
-
-        public MovementManager movementManager
-        {
-            get { return GetComponent<MovementManager>(); }
-        }
-
-        public WorldManager worldManager
-        {
-            get { return GetComponent<WorldManager>(); }
-        }
+        internal EntityManager entityManager;
+        internal MovementManager movementManager;
+        internal WorldManager worldManager;
 
         private void Awake()
         {
             randomizer = new System.Random();
+            entityManager = GetComponent<EntityManager>();
+            movementManager = GetComponent<MovementManager>();
+            worldManager = GetComponent<WorldManager>();
         }
 
-        
+        internal void RunBehaviors()
+        {
+            List<Behavior> behaviorList = GetBehaviorList();
+
+            // Run behaviors
+            foreach (Behavior behavior in behaviorList)
+            {
+                if (behavior.attributes.HitPoints < 0)
+                {
+                    entityManager.Despawn(behavior.entity);
+                }
+                else
+                {
+                    if (behavior) behavior.idleBehavior.Run(this);
+                }
+            }
+        }
+
+
 
         private void Update()
         {
@@ -40,31 +50,24 @@ namespace Assets.Scripts.Managers
             {
                 if (behavior)
                     if (behavior.movement)
-                        if (!behavior.movement.isMoving) behavior.isIdle = true;
+                        if (!behavior.movement.isActive) behavior.isIdle = true;
             }
 
         }
 
-        public void RunBehaviors()
-        {
-            List<Behavior> behaviorList = GetBehaviorList();
-
-            // Run behaviors
-            foreach (Behavior behavior in behaviorList)
-            {
-                if (behavior) behavior.idleBehavior.Run(this);
-            }
-        }
 
         private List<Behavior> GetBehaviorList()
         {
             Behavior behavior;
             List<Behavior> behaviorList = new List<Behavior>();
 
-            foreach (Entity entity in entityManager.mobCollection)
+            foreach (Entity entity in entityManager.MobCollection)
             {
-                behavior = entity.GetComponent<Behavior>();
-                if (behavior) behaviorList.Add(behavior);
+                if (entity)
+                {
+                    behavior = entity.GetComponent<Behavior>();
+                    if (behavior) behaviorList.Add(behavior);
+                }
             }
             return behaviorList;
         }

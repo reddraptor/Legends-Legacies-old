@@ -2,131 +2,136 @@
 using System.Collections.Generic;
 using Assets.Scripts.UI_Components.Menu;
 
-public class MenuManager : MonoBehaviour
-{ 
-    public GameObject[] menuPrefabs;
-    
-    Dictionary<string, AMenu> menuDictionary;
-    AMenu lastOpened;
-    AMenu lastClosed;
-
-    public bool anyOpen
+namespace Assets.Scripts.Managers
+{
+    public class MenuManager : MonoBehaviour
     {
-        get
+        public GameObject[] menuPrefabs;
+
+        public bool IsAnyOpen
         {
-            foreach(AMenu menu in menuDictionary.Values)
+            get
             {
-                if (menu.open) return true;
+                foreach (AMenu menu in menuDictionary.Values)
+                {
+                    if (menu.open) return true;
+                }
+                return false;
             }
-            return false;
         }
-    }
 
-    /* UNITY MESSAGES */
-    // Use this for initialization
-    void Start()
-    {
-        menuDictionary = new Dictionary<string, AMenu>();
+        private Dictionary<string, AMenu> menuDictionary;
+        private AMenu lastOpened;
+        private AMenu lastClosed;
 
-        foreach(GameObject prefab in menuPrefabs)
+
+        /* UNITY MESSAGES */
+        // Use this for initialization
+        void Start()
         {
-            AMenu menu = Instantiate(prefab).GetComponent<AMenu>();
-            menu.open = false;
-            menuDictionary.Add(prefab.name, menu);
-            menu.menuManager = this;
+            menuDictionary = new Dictionary<string, AMenu>();
+
+            foreach (GameObject prefab in menuPrefabs)
+            {
+                AMenu menu = Instantiate(prefab).GetComponent<AMenu>();
+                menu.open = false;
+                menuDictionary.Add(prefab.name, menu);
+                menu.menuManager = this;
+            }
         }
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    /* METHODS */
-
-    public void Open(string menuName, AMenu callingMenu)
-    {
-        AMenu menu = GetMenu(menuName);
-
-        if (menu)
+        // Update is called once per frame
+        void Update()
         {
-            if (callingMenu) menu.callingMenu = callingMenu;
-            Open(menu);
+
         }
-    }
 
-    public void Open(string menuName)
-    {
-        Open(menuName, null);
-    }
+        /* METHODS */
 
-    public void Open(AMenu menu)
-    {
-        if (menu)
+        public void Open(string menuName, AMenu callingMenu)
         {
-            menu.OnOpen();
-            menu.open = true;
-            lastOpened = menu;
+            AMenu menu = GetMenu(menuName);
+
+            if (menu)
+            {
+                if (callingMenu) menu.callingMenu = callingMenu;
+                Open(menu);
+            }
         }
-    }
 
-
-    public void Close(string menuName)
-    {
-        Close(GetMenu(menuName));
-    }
-
-    public void Close(AMenu menu)
-    {
-        if (menu)
+        public void Open(string menuName)
         {
-            menu.OnClose();
-            menu.open = false;
-            lastClosed = menu;
+            Open(menuName, null);
         }
-    }
 
-    public void CloseAll()
-    {
-        foreach (AMenu menu in menuDictionary.Values) Close(menu);
-    }
-
-    public void Return(string menuName)
-    {
-        AMenu menu = GetMenu(menuName);
-        if (menu)
+        public void Open(AMenu menu)
         {
-            if (menu.callingMenu) Open(menu.callingMenu);
+            if (menu)
+            {
+                menu.OnOpen();
+                menu.open = true;
+                lastOpened = menu;
+            }
         }
-        Close(menuName);
-    }
 
-    public void Return()
-    {
-        if (lastOpened)
+
+        public void Close(string menuName)
         {
-            Close(lastOpened);
-            if (lastOpened.callingMenu) Open(lastOpened.callingMenu);
+            Close(GetMenu(menuName));
         }
-    }
 
-    public AMenu GetMenu(string menuName)
-    {
-        AMenu menu;
-
-        if (menuDictionary.TryGetValue(menuName, out menu))
+        public void Close(AMenu menu)
         {
-            return menu;
+            if (menu)
+            {
+                menu.OnClose();
+                menu.open = false;
+                lastClosed = menu;
+            }
         }
-        else return null;
+
+        public void CloseAll()
+        {
+            foreach (AMenu menu in menuDictionary.Values) Close(menu);
+        }
+
+        public void Return(string menuName)
+        {
+            AMenu menu = GetMenu(menuName);
+            if (menu)
+            {
+                if (menu.callingMenu) Open(menu.callingMenu);
+            }
+            Close(menuName);
+        }
+
+        public void Return()
+        {
+            if (lastOpened)
+            {
+                Close(lastOpened);
+                if (lastOpened.callingMenu) Open(lastOpened.callingMenu);
+            }
+        }
+
+        public AMenu GetMenu(string menuName)
+        {
+            AMenu menu;
+
+            if (menuDictionary.TryGetValue(menuName, out menu))
+            {
+                return menu;
+            }
+            else return null;
+        }
+
+        public bool IsOpen(string menuName)
+        {
+            AMenu menu = GetMenu(menuName);
+            if (menu)
+                return menu.open;
+            else return false;
+        }
     }
 
-    public bool IsOpen(string menuName)
-    {
-        AMenu menu = GetMenu(menuName);
-        if (menu)
-            return menu.open;
-        else return false;
-    }
 }

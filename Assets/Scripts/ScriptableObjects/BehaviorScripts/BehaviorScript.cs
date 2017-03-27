@@ -18,35 +18,35 @@ namespace Assets.Scripts.ScriptableObjects.BehaviorScripts
 
             if (direction == Direction.North)
             {
-                directionVector.x = 0; directionVector.x = 1;
+                directionVector.x = 0; directionVector.y = 1;
             }
             else if (direction == Direction.Northeast)
             {
-                directionVector.x = 1; directionVector.x = 1;
+                directionVector.x = 1; directionVector.y = 1;
             }
             else if (direction == Direction.East)
             {
-                directionVector.x = 1; directionVector.x = 0;
+                directionVector.x = 1; directionVector.y = 0;
             }
             else if (direction == Direction.Southeast)
             {
-                directionVector.x = 1; directionVector.x = -1;
+                directionVector.x = 1; directionVector.y = -1;
             }
             else if (direction == Direction.South)
             {
-                directionVector.x = 0; directionVector.x = -1;
+                directionVector.x = 0; directionVector.y = -1;
             }
             else if (direction == Direction.Southwest)
             {
-                directionVector.x = -1; directionVector.x = -1;
+                directionVector.x = -1; directionVector.y = -1;
             }
             else if (direction == Direction.West)
             {
-                directionVector.x = -1; directionVector.x = 0;
+                directionVector.x = -1; directionVector.y = 0;
             }
             else if (direction == Direction.Northwest)
             {
-                directionVector.x = -1; directionVector.x = 1;
+                directionVector.x = -1; directionVector.y = 1;
             }
 
             return directionVector;

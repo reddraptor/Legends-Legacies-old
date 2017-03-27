@@ -18,13 +18,15 @@ Doesn't save mob positions or attributes yet
 Chuck Loading
 -------------
 Chunks only load when on very edge of loaded chunks rather then within chunkwidth from camera focus FIXED
+Spawning Mobs can not different between itself and other mobs FIXED
 
 
 Mob Behavior
 ------------
-Movement could be more smoother. Mobs often make behaviorial moves before scrolling back to position rather then combining screen movement.
+Movement could be more smoother. Mobs often make behaviorial moves before scrolling back to position rather then combining screen movement. FIXED MOSTLY
 Mobs that are spawned at the same time all move as one. FIXED
 
 Movement
 --------
 Changing home terrain to air or water not having any effect on speed
+Player movement pushes adjacent mob

@@ -40,7 +40,7 @@ namespace Assets.Scripts.UI_Components.Menu
             string selectedText = saveGameList.GetSelectedText();
             if (persistanceManager && (selectedText != ""))
             {
-                if (gameManager) gameManager.ClearGame();
+                // if (gameManager) gameManager.ClearGame(); movemed to gameManager.BeginGame()
                 persistanceManager.Load(selectedText);
                 if (gameManager) gameManager.BeginGame();
                 mainMenu.saveEnabled = true;

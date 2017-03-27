@@ -23,10 +23,9 @@ GameObject:
   - component: {fileID: 114000014172149608}
   - component: {fileID: 114844435103167024}
   - component: {fileID: 50000012280632742}
-  - component: {fileID: 114382975848423348}
   - component: {fileID: 114408127106374166}
   - component: {fileID: 61723992194057692}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -91,19 +90,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00ae274bd02284a44ade7d76086e8b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114382975848423348
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012436119000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bddfc895ab8bca44baf695c568e0f05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  placed: 0
-  entityType: 2
 --- !u!114 &114408127106374166
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -115,10 +101,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d007e97553ef91409f75c90f8b04cff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  body: 2
-  spirit: 2
-  mind: 2
+  baseBody: 1
+  baseSpirit: 1
+  baseMind: 1
   homeTerrain: 0
+  damageTaken: 0
 --- !u!114 &114844435103167024
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -131,11 +118,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  horizontal: 0
-  vertical: 0
-  isMoving: 0
-  startPosition: {x: 0, y: 0}
-  vector: {x: 0, y: 0}
 --- !u!212 &212000012987408870
 SpriteRenderer:
   m_ObjectHideFlags: 1

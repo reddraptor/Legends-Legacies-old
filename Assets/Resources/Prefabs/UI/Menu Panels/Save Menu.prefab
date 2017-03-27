@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 114000013910865632}
   m_Layer: 5
   m_Name: Save Menu
-  m_TagString: Save Menu
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Assets.Scripts.Managers;
 
 namespace Assets.Scripts.UI_Components.Menu
 {

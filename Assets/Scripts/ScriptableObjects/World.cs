@@ -6,41 +6,30 @@ namespace Assets.Scripts.ScriptableObjects
     [CreateAssetMenu(menuName = "LegendsLegacies/World")]
     public class World : ScriptableObject
     {
-        /* EDITABLE FIELDS */
-
         public int seed = 07271975;
         public MapGenData mapGenerationData;
         public int loadedChunkDistance = 3;
         public long playerSpawnLocationX = 0, playerSpawnLocationY = 0;
 
-        /* PRIVATE FIELDS */
-
-        LoadedChunks _loadedChunks;
-
-        /* PROPERTIES */
-
-        public int loadedChunkWidth
+        public int LoadedChunkWidth
         {
             get { return loadedChunkDistance * 2 + 1; }
         }
-
-        public Coordinates playerSpawnCoordinates
+        public Coordinates PlayerSpawnCoordinates
         {
             get { return new Coordinates(playerSpawnLocationX, playerSpawnLocationY); }
-            set { playerSpawnLocationX = value.inWorld.x; playerSpawnLocationY = value.inWorld.y; }
+            set { playerSpawnLocationX = value.InWorld.X; playerSpawnLocationY = value.InWorld.Y; }
         }
-
-        public LoadedChunks loadedChunks
+        public LoadedChunks LoadedChunks
         {
-            get { return _loadedChunks; }
+            get { return loadedChunks; }
         }
-
-        /* UNITY MESSAGES */
-
+        
+        private LoadedChunks loadedChunks;
+        
         private void OnEnable()
         {
-            //masterLocationList = LocationList.Master;
-            _loadedChunks = new LoadedChunks(this);
+            loadedChunks = new LoadedChunks(this);
         }
     }
 

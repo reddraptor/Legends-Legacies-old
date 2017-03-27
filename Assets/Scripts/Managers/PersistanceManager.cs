@@ -11,8 +11,8 @@ namespace Assets.Scripts.Managers
         public string saveFileExtension = ".sav";
 
 
-        WorldManager worldManager;
-        string saveFilePath;
+        internal WorldManager worldManager;
+        internal string saveFilePath;
 
         private void Start()
         {

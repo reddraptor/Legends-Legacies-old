@@ -13,6 +13,9 @@ namespace Assets.Scripts.ScriptableObjects.BehaviorScripts
 
         public override void Run(BehaviorManager behaviorManager)
         {
+            //DEBUG
+            idleMovementPercentage = 1;
+            //END DEBUG
             bool makeMove = Roll(behaviorManager.randomizer, idleMovementPercentage);
             Vector2 directionVector;
 

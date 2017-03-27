@@ -4,17 +4,9 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Main Menu
-  - Create Menu
-  - Load Menu
-  - Save Menu
-  - Load View Content
-  - Load Button
-  - Quit Button
-  - Save Button
-  - New Button
   - Mob
   - Terrain Tile
+  - Map
   layers:
   - Default
   - TransparentFX

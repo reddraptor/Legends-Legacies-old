@@ -1,6 +1,6 @@
 ﻿using Assets.Scripts.ScriptableObjects;
 using UnityEngine;
-
+using Assets.Scripts.Managers;
 
 namespace Assets.Scripts.Data_Types.Serialization
 {
@@ -12,7 +12,7 @@ namespace Assets.Scripts.Data_Types.Serialization
 
         public WorldData(WorldManager worldManager)
         {
-            seed = worldManager.world.seed;
+            seed = worldManager.Seed;
 
             EntityManager entityManager = worldManager.GetComponent<EntityManager>();
             if (entityManager)
@@ -27,7 +27,7 @@ namespace Assets.Scripts.Data_Types.Serialization
             if (world && entityManager)
             {
                 worldManager.world = world;
-                worldManager.world.seed = seed;
+                worldManager.Seed = seed;
                 entityData.SetData(entityManager);
             }
         }

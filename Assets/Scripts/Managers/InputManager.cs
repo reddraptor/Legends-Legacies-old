@@ -11,7 +11,6 @@ public class InputManager : MonoBehaviour
     public float mouseScrollEdgePercentage = 0.05f; //Percent of the total screen size at edge where mouse scroll is active.
     public float mouseScrollCenterPercent = 0.1f;
     public GameObject mouseScrollReminder;
-
     public KeyCode mainMenuKey = KeyCode.Escape;
     public KeyCode mouseScrollKey = KeyCode.LeftControl;
 
@@ -24,28 +23,28 @@ public class InputManager : MonoBehaviour
     bool mouseScrollKeyUp;
     Vector2 mousePosition;
     Vector2 mouseScrollDirection;
-    GameManager gameManager;
-    MenuManager menuManager;
-    TileMapManager tileMapManager;
-    EntityManager entityManager;
-    WorldManager worldManager;
-    MovementManager movementManager;
-    BehaviorManager behaviorManager;
 
+    private GameManager gameManager;
+    private TileMapManager tileMapManager;
+    private EntityManager entityManager;
+    private MenuManager menuManager;
+    private BehaviorManager behaviorManager;
+    private ScreenManager screenManager;
+
+    void Awake()
+    {
+        gameManager = GetComponent<GameManager>();
+        tileMapManager = GetComponent<TileMapManager>();
+        entityManager = GetComponent<EntityManager>();
+        menuManager = GetComponent<MenuManager>();
+        behaviorManager = GetComponent<BehaviorManager>();
+        screenManager = GetComponent<ScreenManager>();
+    }
 
     // Use this for initialization
     void Start()
     {
-        gameManager = GetComponent<GameManager>();
-        menuManager = GetComponent<MenuManager>();
-        tileMapManager = GetComponent<TileMapManager>();
-        entityManager = GetComponent<EntityManager>();
-        worldManager = GetComponent<WorldManager>();
-        movementManager = GetComponent<MovementManager>();
-        behaviorManager = GetComponent<BehaviorManager>();
         mouseScrollReminder.GetComponent<Canvas>().enabled = false;
-
-
     }
 
     // Update is called once per frame
@@ -58,11 +57,18 @@ public class InputManager : MonoBehaviour
         mousePosition = Input.mousePosition;
         mouseScrollDirection = GetMouseScrollDirection(mousePosition);
 
+        // START DEBUG //
+        //inputDirection = new Vector2(1, 0);
+
+
+        // END DEBUG //
+
+
         if (menuKeyUp)
         {
             if (menuManager)
             {
-                if (!menuManager.anyOpen)
+                if (!menuManager.IsAnyOpen)
                     menuManager.Open("Main Menu");
                 else
                     menuManager.Return();
@@ -81,22 +87,29 @@ public class InputManager : MonoBehaviour
             mouseScrollReminder.GetComponent<Canvas>().enabled = false;
         }
 
-        else if (!tileMapManager.IsMoving && !menuManager.anyOpen)
+        else if (!tileMapManager.IsScrolling && (!menuManager || !menuManager.IsAnyOpen) )
         {
-            if ((inputDirection.x != 0 || inputDirection.y != 0) && gameManager.player != null)
+            if ((inputDirection.x != 0 || inputDirection.y != 0) && gameManager.Player != null)
             {
-                entityManager.Move(gameManager.player.entity, inputDirection);
+                entityManager.Move(gameManager.Player, inputDirection);
 
                 // START DEBUG CODE
-                if (tileMapManager.focus != gameManager.player.coordinates)
+                if (tileMapManager.Focus != gameManager.Player.Coordinates)
                 {
                     Debug.Log(
                         "Focus and player coordinates do not match. \n" +
-                        "Focus: " + tileMapManager.focus + "\n" +
-                        "Player: " + gameManager.player.coordinates
+                        "Focus: " + tileMapManager.Focus + "\n" +
+                        "Player: " + gameManager.Player.Coordinates
                         );
                 }
-                // END DEBUG CODE
+
+                if (true)
+                {
+                    Debug.Log(
+                "Map Focus: " + tileMapManager.Focus + "\n" +
+                "Player: " + gameManager.Player.Coordinates);
+
+                }                // END DEBUG CODE
 
                 // Run mob behaviors
                 behaviorManager.RunBehaviors();
@@ -140,11 +153,11 @@ public class InputManager : MonoBehaviour
 
             else if (!mouseScrollActive)
             {
-                if (gameManager.player)
+                if (gameManager.Player)
                 {
-                    if (!gameManager.player.entity.IsCentered)
+                    if (!gameManager.Player.IsCentered)
                     {
-                        entityManager.Center(gameManager.player.entity);
+                        screenManager.CenterOn(gameManager.Player.Coordinates);
                     }
                 }
             }
