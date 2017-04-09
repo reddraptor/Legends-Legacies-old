@@ -1,18 +1,14 @@
 ﻿using UnityEngine;
 using Assets.Scripts.Data_Types;
 using Assets.Scripts.Components;
-using System;
+using Client = Assets.Scripts.Components.Client;
 
 namespace Assets.Scripts.Managers
 {
     public class GameManager : MonoBehaviour
     {
-        public Player Player
-        {
-            get { return player; }
-        }
+        public Client client;
 
-        private Player player;
         private WorldManager worldManager;
         private TileMapManager tileMapManager;
         private MenuManager menuManager;
@@ -52,12 +48,11 @@ namespace Assets.Scripts.Managers
 
                 if (entityManager & worldManager)
                 {
-                    player = entityManager.GetPlayer("Player One");
-                    if (!player)
+                    if (!(client.controlledEntity = entityManager.GetPlayer("Player One")))
                     {
                         worldManager.LoadChunksAt(worldManager.world.PlayerSpawnCoordinates);
                         tileMapManager.SetFocus(worldManager.world.PlayerSpawnCoordinates);
-                        player = (Player)entityManager.Spawn("Player", worldManager.world.PlayerSpawnCoordinates);
+                        client.controlledEntity = entityManager.SpawnPlayer("Player One");
                     }
                 }
                 tileMapManager.ShowMap(true);

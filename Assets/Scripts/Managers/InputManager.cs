@@ -89,17 +89,21 @@ public class InputManager : MonoBehaviour
 
         else if (!tileMapManager.IsScrolling && (!menuManager || !menuManager.IsAnyOpen) )
         {
-            if ((inputDirection.x != 0 || inputDirection.y != 0) && gameManager.Player != null)
+            //Debug
+            //inputDirection.x = 1;
+            //End Debug
+
+            if ((inputDirection.x != 0 || inputDirection.y != 0) && gameManager.client.controlledEntity != null)
             {
-                entityManager.Move(gameManager.Player, inputDirection);
+                entityManager.Move(gameManager.client.controlledEntity, inputDirection);
 
                 // START DEBUG CODE
-                if (tileMapManager.Focus != gameManager.Player.Coordinates)
+                if (tileMapManager.Focus != gameManager.client.controlledEntity.Coordinates)
                 {
                     Debug.Log(
                         "Focus and player coordinates do not match. \n" +
                         "Focus: " + tileMapManager.Focus + "\n" +
-                        "Player: " + gameManager.Player.Coordinates
+                        "Player: " + gameManager.client.controlledEntity.Coordinates
                         );
                 }
 
@@ -107,7 +111,7 @@ public class InputManager : MonoBehaviour
                 {
                     Debug.Log(
                 "Map Focus: " + tileMapManager.Focus + "\n" +
-                "Player: " + gameManager.Player.Coordinates);
+                "Player: " + gameManager.client.controlledEntity.Coordinates);
 
                 }                // END DEBUG CODE
 
@@ -153,11 +157,11 @@ public class InputManager : MonoBehaviour
 
             else if (!mouseScrollActive)
             {
-                if (gameManager.Player)
+                if (gameManager.client.controlledEntity)
                 {
-                    if (!gameManager.Player.IsCentered)
+                    if (!gameManager.client.controlledEntity.IsCentered)
                     {
-                        screenManager.CenterOn(gameManager.Player.Coordinates);
+                        screenManager.CenterOn(gameManager.client.controlledEntity.Coordinates);
                     }
                 }
             }

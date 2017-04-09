@@ -3,8 +3,8 @@ using System.Collections;
 
 namespace Assets.Scripts.Components
 {
-    [RequireComponent(typeof(Movement))]
-    public class TileMap : Entity
+    [RequireComponent(typeof(Movable))]
+    public class TileMap : EntityCollection
     {
         public GameObject[,] tileArray;
 
@@ -38,7 +38,7 @@ namespace Assets.Scripts.Components
                         GameObject gO = tileArray[i, j];
                         if (gO)
                         {
-                            TerrainTile tile = gO.GetComponent<TerrainTile>();
+                            TerrainTileEntity tile = gO.GetComponent<TerrainTileEntity>();
                             if (tile) tile.Show = value;
                         }
                     }

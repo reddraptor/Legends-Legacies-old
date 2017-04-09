@@ -8,7 +8,7 @@ namespace Assets.Scripts.Components
         public int baseBody = 1;
         public int baseSpirit = 1;
         public int baseMind = 1;
-        public TerrainTile.TerrainType homeTerrain = TerrainTile.TerrainType.Land;
+        public TerrainTileEntity.TerrainType homeTerrain = TerrainTileEntity.TerrainType.Land;
         public int damageTaken = 0;
         
         // **** MAIN PROPERTIES **** //
@@ -80,7 +80,7 @@ namespace Assets.Scripts.Components
         public int WalkSpeed
         {
             get {
-                if (homeTerrain == TerrainTile.TerrainType.Land)
+                if (homeTerrain == TerrainTileEntity.TerrainType.Land)
                     return (Constitution + Agility)/4;
                 else
                     return Constitution / 4;
@@ -92,7 +92,7 @@ namespace Assets.Scripts.Components
         {
             get
             {
-                if (homeTerrain == TerrainTile.TerrainType.Water)
+                if (homeTerrain == TerrainTileEntity.TerrainType.Water)
                     return (Agility + Constitution)/4;
                 else
                     return Constitution/4;
@@ -104,7 +104,7 @@ namespace Assets.Scripts.Components
         {
             get
             {
-                if (homeTerrain == TerrainTile.TerrainType.Air)
+                if (homeTerrain == TerrainTileEntity.TerrainType.Air)
                     return (Agility + Constitution)/4;
                 else
                     return Agility/4;

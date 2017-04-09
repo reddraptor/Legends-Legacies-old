@@ -12,7 +12,7 @@ namespace Assets.Scripts.Data_Types.Serialization
 
         public PlayerData (Entity entity)
         {
-            Player player = entity.GetComponent<Player>();
+            PlayerEntity player = entity.GetComponent<PlayerEntity>();
             if (player)
             {
                 name = player.name;
@@ -24,7 +24,7 @@ namespace Assets.Scripts.Data_Types.Serialization
          
         public void SetData(Entity entity)
         {
-            Player player = entity.GetComponent<Player>();
+            PlayerEntity player = entity.GetComponent<PlayerEntity>();
             if (player)
             {
                // entity.coordinates = new Coordinates(coordX, coordY);

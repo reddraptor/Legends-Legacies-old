@@ -66,29 +66,29 @@ namespace Assets.Scripts.Managers
 
         }
 
-        internal TerrainTile GetTerrainTile(Coordinates coordinates)
+        internal TerrainTileEntity GetTerrainTile(Coordinates coordinates)
         {
             GameObject tileObject = GetTilePrefab(coordinates);
 
-            if (tileObject) return tileObject.GetComponent<TerrainTile>();
+            if (tileObject) return tileObject.GetComponent<TerrainTileEntity>();
 
             return null;
         }
 
-        internal float GetSpeed(Coordinates coordinates, Attributes attributes, TerrainTile.TerrainType locomotion)
+        internal float GetSpeed(Coordinates coordinates, Attributes attributes, TerrainTileEntity.TerrainType locomotion)
         {
 
-            TerrainTile terrainTile = GetTerrainTile(coordinates);
+            TerrainTileEntity terrainTile = GetTerrainTile(coordinates);
 
             if (terrainTile)
             {
-                if (locomotion == TerrainTile.TerrainType.Air)
+                if (locomotion == TerrainTileEntity.TerrainType.Air)
                     return attributes.FlySpeed;
-                else if (locomotion == TerrainTile.TerrainType.Land)
+                else if (locomotion == TerrainTileEntity.TerrainType.Land)
                 {
                     return attributes.WalkSpeed * terrainTile.speedModifier;
                 }
-                else if (locomotion == TerrainTile.TerrainType.Water)
+                else if (locomotion == TerrainTileEntity.TerrainType.Water)
                 {
                     return attributes.SwimSpeed * terrainTile.speedModifier;
                 }

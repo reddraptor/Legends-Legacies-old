@@ -1,135 +1,156 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.Components;
+using Assets.Scripts.Data_Types;
+using Assets.Scripts.EventHandlers;
+using System.Collections;
+using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Managers
 {
     [RequireComponent(typeof(GameManager))]
     public class MovementManager : MonoBehaviour
     {
-        public float movementDelay = 0f;
-
         private EntityManager entityManager;
         private TileMapManager tileMapManager;
         private ScreenManager screenManager;
 
-        HashSet<Movement> movements;
-        private float timeSinceLastRun = 0;
+        Queue<Movement> movementQueue = new Queue<Movement>();
 
         /* UNITY MESSAGES */
 
-        // Awake is called when the script instance is being loaded
-        private void Awake()
+        private void Start()
         {
-            movements = new HashSet<Movement>();
             entityManager = GetComponent<EntityManager>();
             tileMapManager = GetComponent<TileMapManager>();
             screenManager = GetComponent<ScreenManager>();
         }
 
-        // Update is called once per frame
         void Update()
         {
-            timeSinceLastRun += Time.deltaTime;
-            if (timeSinceLastRun > movementDelay)
-            {
-                DoMoves();
-                timeSinceLastRun = 0;
-            }
+            DoMoves();
         }
 
         /* METHODS */
-        public void Add(Movement movement, Vector2 addVector, float speed)
+        public void Assign(Entity entity, Vector2 direction, float speed)
         {
-            // If movement already in movement set, update movement vector
-            if (movements.Contains(movement))
+            if (entity)
             {
-                Vector2 currentSpeedVector = movement.vector.normalized * movement.speed;
-                Vector2 addSpeedVector = addVector.normalized * speed;
+                Movable movable = entity.GetComponent<Movable>();
+                if (movable && movable.rigidbody)
+                {
+                    if (movementQueue.Contains(movable.nextMovement))
+                    {
+                        movable.nextMovement.Add(direction, speed);
+                        ExecuteEvents.Execute<IMovementEventHandler>(gameObject, null, (x, y) => x.OnMovementChange(movable.nextMovement));
+                    }
 
-                movement.speed = (currentSpeedVector + addSpeedVector).magnitude;
-                movement.vector += addVector;
-            }
-            // Else add new movement to movement set
-            else
-            {
-                movement.startPosition = movement.rigidbody.position; //Set starting position to entity's current predicted position
-                movement.vector = addVector;
-                movement.speed = speed;
-                movements.Add(movement);
+                    // Else add new movement to movement queue
+                    else
+                    {
+                        Vector2 startPosition;
+                        if (movable.moving)
+                            startPosition = movable.currentMovement.EndPosition;
+                        else
+                            startPosition = movable.rigidbody.position;
+
+                        Movement nextMovement = new Movement(movable, startPosition, direction, speed);
+                        movable.nextMovement = nextMovement;
+                        movementQueue.Enqueue(nextMovement);
+                        ExecuteEvents.Execute<IMovementEventHandler>(gameObject, null, (x, y) => x.OnMovementCreate(nextMovement));
+                    }
+                }
+                //else Debug.Log("Attempt to add movement to entity with no moveable component.");
             }
         }
 
         void DoMoves()
         {
-            foreach (Movement movement in movements)
-            {
-                StartCoroutine(Move(movement));
-            }
-            movements.Clear();
+            int queueSize = movementQueue.Count;
+            int queuePosition = 0;
 
+            while (queuePosition < queueSize)
+            {
+                Movement nextMovement = movementQueue.Dequeue();
+
+                if (nextMovement.movable.IsMoving)
+                    movementQueue.Enqueue(nextMovement);
+                else
+                {
+                    nextMovement.movable.currentMovement = nextMovement;
+                    StartCoroutine(Move(nextMovement));
+                }
+
+                queuePosition++;
+            }
         }
 
         IEnumerator Move(Movement movement)
         {
-            if (!movement) yield break;
+            if (movement == null || !movement.movable || movement.direction == Vector2.zero || !movement.movable.rigidbody) yield break;
+            
+            ExecuteEvents.Execute<IMovementEventHandler>(gameObject, null, (x, y) => x.OnMovementStart(movement));
+            movement.movable.moving = true;
 
-            movement.isActive = true;
-            Vector2 endPosition = CurrentEndPosition(movement);
+            Vector2 endPosition = movement.startPosition + movement.direction;
 
-            float sqrRemainingDistance = (movement.rigidbody.position - endPosition).sqrMagnitude;
+            float sqrRemainingDistance = (movement.movable.rigidbody.position - endPosition).sqrMagnitude;
 
             while (sqrRemainingDistance > float.Epsilon)
             {
-                if (movement == null) yield break;
-                Vector3 newPosition = Vector3.MoveTowards(movement.rigidbody.position, endPosition, movement.speed * Time.deltaTime);
-                movement.rigidbody.MovePosition(newPosition);
-                endPosition = CurrentEndPosition(movement);
-                sqrRemainingDistance = (movement.rigidbody.position - endPosition).sqrMagnitude;
+                if (movement.movable == null) break;
+
+                Vector3 newPosition = Vector3.MoveTowards(movement.movable.rigidbody.position, endPosition, movement.speed * Time.deltaTime);
+                movement.movable.rigidbody.MovePosition(newPosition);
+
                 yield return null;
+
+                sqrRemainingDistance = (movement.movable.rigidbody.position - endPosition).sqrMagnitude;
             }
 
-            Reset(movement);
-            SnapToGrid(movement);
-            movement.isActive = false;
+            ExecuteEvents.Execute<IMovementEventHandler>(gameObject, null, (x, y) => x.OnMovementEnd(movement));
+            movement.movable.moving = false;
+
+            //Reset(movement);
+            //SnapToGrid(movement);
+            //movement.isActive = false;
 
             // Start Debug Code
-            if (movement)
-            {
-                if (movement.rigidbody.position == entityManager.GetPlayer("Player One").Position && movement.Entity.Type != "Map")
-                {
-                    Debug.Log(
-                        movement.Entity + " sharing place with player!" + "\n" +
-                        "Player: " + entityManager.GetPlayer("Player One").Coordinates + "\n" +
-                        movement.Entity + ": " + movement.Coordinates + "\n" +
-                        "Focus: " + tileMapManager.Focus
-                        );
-                }
+            //if (movement.movable)
+            //{
+            //    if (movement.movable.rigidbody.position == GetComponent<GameManager>().client.controlledEntity.Position && movement.movable.entity.Type != "Map")
+            //    {
+            //        Debug.Log(
+            //            movement.movable.entity + " sharing place with player!" + "\n" +
+            //            "Player: " + GetComponent<GameManager>().client.controlledEntity.Coordinates + "\n" +
+            //            movement.movable.entity + ": " + movement.movable.Coordinates + "\n" +
+            //            "Focus: " + tileMapManager.Focus
+            //            );
+            //    }
 
-                if (movement.Entity.Coordinates != tileMapManager.GetCoordinates(movement.rigidbody.position) && movement.name != tileMapManager.tileMapComponent.name)
-                {
-                    Debug.Log(
-                        "Coordinates and position do not match!" + "\n" +
-                        movement.Entity + ": " + movement.Coordinates + "\n" +
-                        tileMapManager.tileMapComponent + ": " + tileMapManager.GetCoordinates(movement.rigidbody.position)
-                        );
-                }
+            //    if (movement.movable.entity.Coordinates != tileMapManager.GetCoordinates(movement.movable.rigidbody.position) && movement.movable.name != tileMapManager.tileMapComponent.name)
+            //    {
+            //        Debug.Log(
+            //            "Coordinates and position do not match!" + "\n" +
+            //            movement.movable.entity + ": " + movement.movable.Coordinates + "\n" +
+            //            tileMapManager.tileMapComponent + ": " + tileMapManager.GetCoordinates(movement.movable.rigidbody.position)
+            //            );
+            //    }
 
-            }
+            //}
 
             // End Debug Code
 
         }
 
-        private void Reset(Movement movement)
-        {
-            movement.vector = Vector2.zero;
-            movement.speed = 0;
-            movement.startPosition = movement.rigidbody.position;
-        }
+        //private void Reset(Moveable movement)
+        //{
+        //    movement.vector = Vector2.zero;
+        //    movement.speed = 0;
+        //    movement.startPosition = movement.Rigidbody.position;
+        //}
 
-        private void SnapToGrid(Movement movement)
+        private void SnapToGrid(Movable movement)
         {
             if (!movement) return;
 
@@ -141,14 +162,14 @@ namespace Assets.Scripts.Managers
             { 
                 Vector3 predictedPosition = screenManager.GetScreenPositionAt(movement.Coordinates);
                 Vector3 truePosition = movement.rigidbody.position;
-                if (predictedPosition != truePosition) movement.transform.position = predictedPosition;
+                if (predictedPosition != truePosition) movement.rigidbody.position = predictedPosition;
             }
 
         }
 
         private Vector3 CurrentEndPosition(Movement movement)
         {
-            return movement.startPosition + movement.vector;
+            return movement.startPosition + movement.direction;
         }
     }
 

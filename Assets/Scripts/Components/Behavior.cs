@@ -6,33 +6,28 @@ namespace Assets.Scripts.Components
     public class Behavior: MonoBehaviour
     {
         public IdleBehavior idlePrefab;
-        public bool isIdle;
 
-        IdleBehavior iBehavior;
+        internal enum State {Idle, Moving}
 
-        public IdleBehavior idleBehavior
+        internal IdleBehavior idleBehavior;
+
+        internal Movable movable;
+
+        internal EntityMember entityMember;
+
+        internal Attributes attributes;
+
+        internal State state = State.Idle;
+
+        private void Start()
         {
-            get { return iBehavior; }
-        }
+            entityMember = GetComponent<EntityMember>();
+            movable = GetComponent<Movable>();
+            entityMember = GetComponent<EntityMember>();
+            attributes = GetComponent<Attributes>();
 
-        public Movement movement {
-            get { return GetComponent<Movement>(); }
-        }
-
-        public Entity entity
-        {
-            get { return GetComponent<Entity>(); }
-        }
-
-        public Attributes attributes
-        {
-            get { return GetComponent<Attributes>(); }
-        }
-
-        private void Awake()
-        {
-            iBehavior = Instantiate(idlePrefab);
-            iBehavior.behavior = this;
+            idleBehavior = Instantiate(idlePrefab);
+            idleBehavior.behavior = this;
         }
     }
 }

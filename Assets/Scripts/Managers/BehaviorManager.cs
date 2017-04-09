@@ -1,26 +1,20 @@
 ﻿using UnityEngine;
 using Assets.Scripts.Components;
+using Assets.Scripts.EventHandlers;
+using Assets.Scripts.Data_Types;
 using System.Collections.Generic;
-
+using System;
 
 namespace Assets.Scripts.Managers
 {
-    public class BehaviorManager : MonoBehaviour
+    public class BehaviorManager : MonoBehaviour, IMovementEventHandler
     {
 
-        internal System.Random randomizer;
+        internal System.Random randomizer = new System.Random();
 
         internal EntityManager entityManager;
         internal MovementManager movementManager;
         internal WorldManager worldManager;
-
-        private void Awake()
-        {
-            randomizer = new System.Random();
-            entityManager = GetComponent<EntityManager>();
-            movementManager = GetComponent<MovementManager>();
-            worldManager = GetComponent<WorldManager>();
-        }
 
         internal void RunBehaviors()
         {
@@ -29,30 +23,22 @@ namespace Assets.Scripts.Managers
             // Run behaviors
             foreach (Behavior behavior in behaviorList)
             {
-                if (behavior.attributes.HitPoints < 0)
+                if (behavior.attributes && behavior.attributes.HitPoints < 0 && behavior.entityMember)
                 {
-                    entityManager.Despawn(behavior.entity);
+                    entityManager.Despawn(behavior.entityMember);
                 }
-                else
+                else if (behavior.state == Behavior.State.Idle && behavior.idleBehavior)
                 {
-                    if (behavior) behavior.idleBehavior.Run(this);
+                    behavior.idleBehavior.Run(this);
                 }
             }
         }
 
-
-
-        private void Update()
+        private void Start()
         {
-            List<Behavior> behaviorList = GetBehaviorList();
-
-            foreach (Behavior behavior in behaviorList)
-            {
-                if (behavior)
-                    if (behavior.movement)
-                        if (!behavior.movement.isActive) behavior.isIdle = true;
-            }
-
+            entityManager = GetComponent<EntityManager>();
+            movementManager = GetComponent<MovementManager>();
+            worldManager = GetComponent<WorldManager>();
         }
 
 
@@ -61,16 +47,45 @@ namespace Assets.Scripts.Managers
             Behavior behavior;
             List<Behavior> behaviorList = new List<Behavior>();
 
-            foreach (Entity entity in entityManager.MobCollection)
+            foreach (EntityMember entityMember in entityManager.mobCollection.Members)
             {
-                if (entity)
+                if (entityMember)
                 {
-                    behavior = entity.GetComponent<Behavior>();
+                    behavior = entityMember.GetComponent<Behavior>();
                     if (behavior) behaviorList.Add(behavior);
                 }
             }
             return behaviorList;
         }
 
+
+        public Behavior GetBehavior(EntityMember entityMember)
+        {
+            return entityMember.GetComponent<Behavior>();
+        }
+
+        public void OnMovementStart(Movement movement)
+        {
+            // Do nothing
+            //Debug.Log("Started: " + movement);
+        }
+
+        public void OnMovementEnd(Movement movement)
+        {
+            //Debug.Log("Ended: " + movement);
+            Behavior behavior = null;
+            if (movement.movable.entity is EntityMember) behavior = GetBehavior((EntityMember)movement.movable.entity);
+            if (behavior) behavior.state = Behavior.State.Idle;
+        }
+
+        public void OnMovementCreate(Movement movement)
+        {
+            //Debug.Log("Created: " + movement);
+        }
+
+        public void OnMovementChange(Movement movement)
+        {
+            //Debug.Log("Changed: " + movement);
+        }
     }
 }

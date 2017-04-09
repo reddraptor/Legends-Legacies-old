@@ -1,31 +1,20 @@
 ﻿Current
-------
-Try an entity system approach
--outline with comments on each manager then implement
--TileMapManager DONE
--MobileManager DONE
--GameManager DONE
--WorldManager DONE
--SpawnManager DONE
---LocationList DataType, Location Component -> removed, using EntityManager
--InputManager DONE
---player movement DONE
---map scroll DONE
---menus DONE
--MenuManager
---Main Menu DONE
---Create Menu DONE
---Save Menu --> need PresistanceManager DONE
---Load Menu --> need PresistanceManager DONE
----Ability to clear all game assets --> DONE
+-------
+
+Bugfixing to components up to this point
 
 
-Change Serialization Implementation
--PersistanceManager? DONE
+Reevaluate entity properties, Placed and Show
 
-Coordinate Data Type
--return to read-only properties DONE
--hashcode implementation DONE
+Behavior -Hashcode, Equals, ToString -> from entity
+
+
+
+-Adjust movement system
+--Fix mob interrupted movement bug FIXED!
+--Fix attempting to add movement to despawned mobs FIXED
+--entities ending up on the same spot and then unable to move
+--Movement EventSystemHandler DONE
 
 
 Early enemy implementation
@@ -39,19 +28,6 @@ attributes
 -- component DONE
 -- early speed variable BUGFIXING
 
-Entities
-------
-Make Player, Mob, TerrainTile subtypes of entity DONE
-Newly instanced entities should not be seen by raycasts until placed DONE
-
-
-Add ScreenManager - move handling of screen position of gameobjects and camera to this DONE
-
-MovementManager
----------------
--Switch to a Vector2 in determining directions and distances DONE
-
-Bugfixing to components up to this point
 
 
 UI widgets
@@ -156,6 +132,53 @@ Tiles
 serialization
 transition tiles
 
-Location
---------
-override GetHashCode and Equals 
+Completed
+---------
+------
+Try an entity system approach
+-outline with comments on each manager then implement
+-TileMapManager DONE
+-MobileManager DONE
+-GameManager DONE
+-WorldManager DONE
+-SpawnManager DONE
+--LocationList DataType, Location Component -> removed, using EntityManager
+-InputManager DONE
+--player movement DONE
+--map scroll DONE
+--menus DONE
+-MenuManager
+--Main Menu DONE
+--Create Menu DONE
+--Save Menu --> need PresistanceManager DONE
+--Load Menu --> need PresistanceManager DONE
+---Ability to clear all game assets --> DONE
+
+
+Change Serialization Implementation
+-PersistanceManager? DONE
+
+Coordinate Data Type
+-return to read-only properties DONE
+-hashcode implementation DONE
+
+Entities
+------
+Make Player, Mob, TerrainTile subtypes of entity DONE
+Newly instanced entities should not be seen by raycasts until placed DONE
+
+Add ScreenManager - move handling of screen position of gameobjects and camera to this DONE
+
+MovementManager
+---------------
+-Switch to a Vector2 in determining directions and distances DONE
+
+EntityCollection implementation DONE
+-EntityMember DONE
+-EntityCollection DONE
+-Hashcode and Equal overrides DONE
+--figure out how to change coordinates in collection DONE
+-Adjust tilemap system DONE
+
+
+

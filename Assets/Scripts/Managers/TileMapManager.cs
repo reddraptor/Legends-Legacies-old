@@ -14,10 +14,16 @@ namespace Assets.Scripts.Managers
         public float scrollSpeed = 10;
         public float centerPositionX = 0;
         public float centerPositionY = 0;
-
+        public GameObject tileCollection;
+         
         public bool IsScrolling
         {
-            get { return tileMap.Movement.isActive; }
+            get
+            {
+                Movable mapMovable = tileMap.GetComponent<Movable>();
+                if (mapMovable) return mapMovable.IsMoving;
+                else return false;
+            }
         }
 
         public Coordinates Focus
@@ -31,7 +37,6 @@ namespace Assets.Scripts.Managers
             {
                 SetFocus(value);
             }
-
         }
 
         private WorldManager worldManager;
@@ -107,7 +112,7 @@ namespace Assets.Scripts.Managers
                     //The position to place the tile is the lower left corner (0,0) plus the indices in units
                     tilePos = focusPos + offset - new Vector2(viewableTileDimensions.I / 2 - i, viewableTileDimensions.J / 2 - j);
 
-                    tileInstance = Instantiate(worldManager.GetTilePrefab(GetCoordinates(new IntegerPair(i, j))), tilePos, Quaternion.identity, tileMap.transform);
+                    tileInstance = Instantiate(worldManager.GetTilePrefab(GetCoordinates(new IntegerPair(i, j))), tilePos, Quaternion.identity, tileCollection.transform);
                     buffer[i, j] = tileInstance;
                 }
             }
@@ -183,16 +188,16 @@ namespace Assets.Scripts.Managers
                 tileMap.transform.position += new Vector3(vector.x, vector.y, 0); //Access the transform position directly, because we need instant change of position
                 Refresh(vector);
 
-                movementManager.Add(tileMap.Movement, -vector, speed);
+                movementManager.Assign(tileMap, -vector, speed);
                 ScrollEntities(-vector, speed);
             }
         }
 
         internal void ScrollEntities(Vector2 vector, float speed)
         {
-            foreach (Entity entity in entityManager.MobCollection)
+            foreach (Entity entity in entityManager.mobCollection.Members)
             {
-                if (entity) movementManager.Add(entity.GetComponent<Movement>(), vector, speed);
+                if (entity) movementManager.Assign(entity, vector, speed);
             }
         }
 
@@ -210,9 +215,8 @@ namespace Assets.Scripts.Managers
 
             Entity mapEntity = tileMap.GetComponent<Entity>();
 
-            mapEntity.chunk = worldManager.GetLoadedChunk(coordinates);
-            mapEntity.tileIndices = new IntegerPair(coordinates.InChunks.I, coordinates.InChunks.J);
-        }
+            mapEntity.SetLocation(worldManager.GetLoadedChunk(coordinates), new IntegerPair(coordinates.InChunks.I, coordinates.InChunks.J));
+         }
 
     }
 

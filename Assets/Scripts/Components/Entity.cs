@@ -7,19 +7,34 @@ namespace Assets.Scripts.Components
     [DisallowMultipleComponent]
     public class Entity : MonoBehaviour
     {
-        /* INSPECTOR FIELDS */
 
-        /* PUBLIC FIELDS */
-        //public Coordinates coordinates = new Coordinates(0, 0);
-        public Chunk chunk = null;
-        public IntegerPair tileIndices = new IntegerPair(0, 0);
+        public Chunk Chunk
+        {
+            get { return chunk; }
+        }
+
+        public IntegerPair TileIndices
+        {
+            get { return tileIndices; }
+        }
+
+        public EntityCollection ParentCollection
+        {
+            get
+            {
+                if (transform.parent)
+                    return transform.parent.GetComponent<EntityCollection>();
+                else return null;
+            }
+        }
+
 
         public Coordinates Coordinates
         {
             get
             {
-                if (chunk != null)
-                    return new Coordinates(chunk, tileIndices);
+                if (Chunk != null)
+                    return new Coordinates(Chunk, TileIndices);
                 else
                     return new Coordinates();
             }
@@ -49,14 +64,11 @@ namespace Assets.Scripts.Components
         {
             get
             {
-                if (GetComponent<Rigidbody2D>())
-                    return GetComponent<Rigidbody2D>().position;
-                else return Vector2.zero;
+                return transform.position;
             }
             set
             {
-                if (GetComponent<Rigidbody2D>())
-                    GetComponent<Rigidbody2D>().position = value;
+                transform.position = value;
             }
         }
 
@@ -65,15 +77,7 @@ namespace Assets.Scripts.Components
             get { return tag; }
         }
 
-        public Movement Movement
-        {
-            get { return GetComponent<Movement>(); }
-        }
 
-        public Attributes Attributes
-        {
-            get { return GetComponent<Attributes>(); }
-        }
 
         public bool IsCentered
         {
@@ -99,8 +103,6 @@ namespace Assets.Scripts.Components
             }
         }
 
-        private bool placed = false;
-
         public override string ToString()
         {
             return name + GetInstanceID() + " (" + Type + ")";
@@ -120,5 +122,28 @@ namespace Assets.Scripts.Components
             return false;
         }
 
+        public void SetLocation(Chunk newChunk, IntegerPair newIndices)
+        {
+            if (ParentCollection)
+            {
+                ParentCollection.UpdateLocation(this, new Coordinates(newChunk, newIndices));
+            }
+            chunk = newChunk;
+            tileIndices = newIndices;
+        }
+
+
+        private Chunk chunk = null;
+        private IntegerPair tileIndices = new IntegerPair(0, 0);
+        private bool placed = false;
+
+        protected virtual void Start()
+        {
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            Debug.Log("Collision!" + this + " and " + collision.collider.GetComponent<Entity>());
+        }
     }
 }

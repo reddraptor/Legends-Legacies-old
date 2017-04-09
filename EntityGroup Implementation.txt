@@ -1,0 +1,33 @@
+EntityGroup implementation
+-Add
+-Remove
+-ContainsEntity
+-ContainsCoordinates
+-HierarchyContainsEntity
+-HierarchyContainsCoordinates
+-Clear
+-Count
+-CopyTo(Array)
+ 
+
+Uses & Needs
+------------
+
+Structures
+-subgroup - tiles - Hold Terrain Tiles with unique coordinates to each other
+-subgroup - mobs - Mobs & NPCS associated with them with unique coordinates to each other
+-subgroup - npcs
+
+Mob Group or party
+-subgroup - mobs  - Hold Mobs with unique coordinates to each other
+-subgroup - loot - container 
+
+Settlement
+-subgroup - structures
+
+EntityMember vs EntityGroup
+---------------------------
+Represents a single entity					Represents a collection of entities, both single and sub-collections
+Unique with in it's hierarchy				Unique with in it's hierarchy
+Coordinates unique with in it's group		Coordinates not unique
+

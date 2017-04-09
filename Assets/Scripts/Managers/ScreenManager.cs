@@ -62,11 +62,11 @@ namespace Assets.Scripts.Managers
         {
             tileMapManager.SetFocus(coordinates);
 
-            foreach (Entity entity in entityManager.PlayerCollection)
+            foreach (Entity entity in entityManager.playerCollection.Members)
             {
                 entity.transform.position = GetScreenPositionAt(entity.Coordinates);
             }
-            foreach (Entity entity in entityManager.MobCollection)
+            foreach (Entity entity in entityManager.mobCollection.Members)
             {
                 entity.transform.position = GetScreenPositionAt(entity.Coordinates);
             }

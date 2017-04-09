@@ -14,23 +14,21 @@ namespace Assets.Scripts.ScriptableObjects.BehaviorScripts
         public override void Run(BehaviorManager behaviorManager)
         {
             //DEBUG
-            idleMovementPercentage = 1;
+            //idleMovementPercentage = 1;
             //END DEBUG
             bool makeMove = Roll(behaviorManager.randomizer, idleMovementPercentage);
             Vector2 directionVector;
 
-            if (makeMove & behavior.isIdle)
+            if (makeMove & (behavior.state == Behavior.State.Idle) )
             {
-                behavior.isIdle = false;
                 directionVector = DirectionVector(RandomDirection(behaviorManager.randomizer));
 
                 if (behaviorManager.entityManager)
                 {
-                    behaviorManager.entityManager.Move(behavior.entity, directionVector);
+                    behavior.state = Behavior.State.Moving;
+                    behaviorManager.entityManager.Move(behavior.entityMember, directionVector);
                 }
             }
-
         }
-
     }
 }
