@@ -11,23 +11,17 @@ namespace Assets.Scripts.ScriptableObjects.BehaviorScripts
         [Range(0f, 1.0f)]
         public float idleMovementPercentage = 0.25f;
 
-        public override void Run(BehaviorManager behaviorManager)
+        public override void Run(BehaviorsManager behaviorManager, Behaviors behaviors)
         {
-            //DEBUG
-            //idleMovementPercentage = 1;
-            //END DEBUG
             bool makeMove = Roll(behaviorManager.randomizer, idleMovementPercentage);
             Vector2 directionVector;
 
-            if (makeMove & (behavior.state == Behavior.State.Idle) )
+            if (makeMove & (behaviors.state == Behaviors.State.Idle) )
             {
                 directionVector = DirectionVector(RandomDirection(behaviorManager.randomizer));
-
-                if (behaviorManager.entityManager)
-                {
-                    behavior.state = Behavior.State.Moving;
-                    behaviorManager.entityManager.Move(behavior.entityMember, directionVector);
-                }
+                if (behaviorManager && behaviors) 
+                    if (behaviorManager.Move(behaviors.entityMember, directionVector))
+                        behaviors.state = Behaviors.State.Moving;
             }
         }
     }

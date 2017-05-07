@@ -12,7 +12,7 @@ namespace Assets.Scripts.Data_Types.Serialization
         // ...
 
 
-        public EntityData(EntityManager entityManager)
+        public EntityData(EntitiesManager entityManager)
         {
             playerData = new List<PlayerData>();
             foreach (Entity entity in entityManager.playerCollection.Members)
@@ -25,7 +25,7 @@ namespace Assets.Scripts.Data_Types.Serialization
 
         }
 
-        public void SetData(EntityManager entityManager)
+        public void SetData(EntitiesManager entityManager)
         {
             foreach (PlayerData data in playerData)
             {

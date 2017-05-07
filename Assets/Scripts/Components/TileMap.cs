@@ -3,7 +3,6 @@ using System.Collections;
 
 namespace Assets.Scripts.Components
 {
-    [RequireComponent(typeof(Movable))]
     public class TileMap : EntityCollection
     {
         public GameObject[,] tileArray;

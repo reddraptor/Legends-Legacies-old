@@ -4,13 +4,12 @@ using Assets.Scripts.Data_Types;
 
 namespace Assets.Scripts.Managers
 {
-    public class PhysicsManager : MonoBehaviour
+    public class PhysicsManager : Manager
     {
-        private ScreenManager screenManager;
 
-        private void Awake()
+        protected override void Start()
         {
-            screenManager = GetComponent<ScreenManager>();
+            base.Start();
         }
 
         internal Entity GetTargetRay(Entity caster, Vector2 direction, float distance)

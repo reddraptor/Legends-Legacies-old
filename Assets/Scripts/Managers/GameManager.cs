@@ -5,21 +5,13 @@ using Client = Assets.Scripts.Components.Client;
 
 namespace Assets.Scripts.Managers
 {
-    public class GameManager : MonoBehaviour
+    public class GameManager : Manager
     {
         public Client client;
 
-        private WorldManager worldManager;
-        private TileMapManager tileMapManager;
-        private MenuManager menuManager;
-        private EntityManager entityManager;
-
-        void Start()
+        protected override void Start()
         {
-            worldManager = GetComponent<WorldManager>();
-            tileMapManager = GetComponent<TileMapManager>();
-            menuManager = GetComponent<MenuManager>();
-            entityManager = GetComponent<EntityManager>();
+            base.Start();
             
             if (menuManager)
             {
@@ -46,13 +38,13 @@ namespace Assets.Scripts.Managers
             {
                 tileMapManager.ShowMap(false);
 
-                if (entityManager & worldManager)
+                if (entitiesManager & worldManager)
                 {
-                    if (!(client.controlledEntity = entityManager.GetPlayer("Player One")))
+                    if (!(client.controlledEntity = entitiesManager.GetPlayer("Player One")))
                     {
                         worldManager.LoadChunksAt(worldManager.world.PlayerSpawnCoordinates);
                         tileMapManager.SetFocus(worldManager.world.PlayerSpawnCoordinates);
-                        client.controlledEntity = entityManager.SpawnPlayer("Player One");
+                        client.controlledEntity = entitiesManager.SpawnPlayer("Player One");
                     }
                 }
                 tileMapManager.ShowMap(true);
@@ -61,7 +53,7 @@ namespace Assets.Scripts.Managers
 
         void ClearGame()
         {
-            if (entityManager) entityManager.CleanUpSpawns();
+            if (entitiesManager) entitiesManager.CleanUpSpawns();
         }
 
     }

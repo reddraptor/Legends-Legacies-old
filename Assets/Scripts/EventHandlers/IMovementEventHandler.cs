@@ -6,13 +6,11 @@ namespace Assets.Scripts.EventHandlers
 {
     public interface IMovementEventHandler : IEventSystemHandler
     {
-        void OnMovementCreate(Movement movement);
+        void OnMovementSet(Movable movable);
 
-        void OnMovementStart(Movement movement);
+        void OnMovementStart(Movable movable);
 
-        void OnMovementEnd(Movement movement);
-
-        void OnMovementChange(Movement movement);
+        void OnMovementEnd(Movable movable);
     }
 
 }

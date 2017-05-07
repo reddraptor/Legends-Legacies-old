@@ -6,12 +6,12 @@
     /// </summary>
     public class EntityMember : Entity
     {
-        internal Behavior behavior;
+        internal Behaviors behavior;
 
         protected override void Start()
         {
             base.Start();
-            behavior = GetComponent<Behavior>();
+            behavior = GetComponent<Behaviors>();
         }
     }
 }

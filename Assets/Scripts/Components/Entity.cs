@@ -24,10 +24,10 @@ namespace Assets.Scripts.Components
             {
                 if (transform.parent)
                     return transform.parent.GetComponent<EntityCollection>();
-                else return null;
+                else
+                    return null;
             }
         }
-
 
         public Coordinates Coordinates
         {
@@ -128,22 +128,21 @@ namespace Assets.Scripts.Components
             {
                 ParentCollection.UpdateLocation(this, new Coordinates(newChunk, newIndices));
             }
-            chunk = newChunk;
+
+            if (newChunk != chunk)
+            {
+                if (chunk != null) chunk.entitySet.Remove(this);
+                chunk = newChunk;
+                chunk.entitySet.Add(this);
+            }
+
             tileIndices = newIndices;
         }
 
+        protected virtual void Start() { }
 
         private Chunk chunk = null;
         private IntegerPair tileIndices = new IntegerPair(0, 0);
         private bool placed = false;
-
-        protected virtual void Start()
-        {
-        }
-
-        private void OnCollisionEnter2D(Collision2D collision)
-        {
-            Debug.Log("Collision!" + this + " and " + collision.collider.GetComponent<Entity>());
-        }
     }
 }

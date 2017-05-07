@@ -6,7 +6,7 @@ using Assets.Scripts.ScriptableObjects;
 
 namespace Assets.Scripts.Managers
 {
-    public class WorldManager : MonoBehaviour
+    public class WorldManager : Manager
     {
         public World world;
         public MapGenerator mapGenerator;
@@ -16,12 +16,11 @@ namespace Assets.Scripts.Managers
             get { return world.LoadedChunks.hasLoaded; }
         }
 
-        private EntityManager entityManager;
         private bool newSeed = true;
         
-        private void Start()
+        protected override void Start()
         {
-            entityManager = GetComponent<EntityManager>();
+            base.Start();
         }
 
         public int Seed
@@ -206,13 +205,13 @@ namespace Assets.Scripts.Managers
             {
                 lowerLeft = chunkLowerLeft
             };
-            if (entityManager) entityManager.Populate(chunk);
+            if (entitiesManager) entitiesManager.Populate(chunk);
             return chunk;
         }
 
         internal void UnloadChunk(Chunk chunk)
         {
-            if (entityManager) entityManager.Depopulate(chunk);
+            if (entitiesManager) entitiesManager.Depopulate(chunk);
         }
     }
 

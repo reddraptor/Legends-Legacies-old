@@ -14,14 +14,14 @@ namespace Assets.Scripts.Data_Types.Serialization
         {
             seed = worldManager.Seed;
 
-            EntityManager entityManager = worldManager.GetComponent<EntityManager>();
+            EntitiesManager entityManager = worldManager.GetComponent<EntitiesManager>();
             if (entityManager)
                 entityData = new EntityData(entityManager);
         }
 
         public void SetData(WorldManager worldManager)
         {
-            EntityManager entityManager = worldManager.GetComponent<EntityManager>();
+            EntitiesManager entityManager = worldManager.GetComponent<EntitiesManager>();
             World world = ScriptableObject.CreateInstance<World>();
 
             if (world && entityManager)

@@ -1,15 +1,14 @@
 ﻿using UnityEngine;
 using Assets.Scripts.ScriptableObjects.BehaviorScripts;
+using Assets.Scripts.Data_Types;
 
 namespace Assets.Scripts.Components
 {
-    public class Behavior: MonoBehaviour
+    public class Behaviors: MonoBehaviour
     {
-        public IdleBehavior idlePrefab;
+        public IdleBehavior idleBehavior;
 
         internal enum State {Idle, Moving}
-
-        internal IdleBehavior idleBehavior;
 
         internal Movable movable;
 
@@ -23,11 +22,7 @@ namespace Assets.Scripts.Components
         {
             entityMember = GetComponent<EntityMember>();
             movable = GetComponent<Movable>();
-            entityMember = GetComponent<EntityMember>();
             attributes = GetComponent<Attributes>();
-
-            idleBehavior = Instantiate(idlePrefab);
-            idleBehavior.behavior = this;
         }
     }
 }

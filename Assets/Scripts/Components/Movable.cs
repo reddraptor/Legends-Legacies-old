@@ -10,13 +10,13 @@ namespace Assets.Scripts.Components
     {
         public override string ToString()
         {
-            string output = entity + "\n";
+            string output = "Entity: " + entity + "\n";
 
-            if (currentMovement != null)
-                output += "Current Move: " + currentMovement + "\n";
-
-            if (nextMovement != null)
-                output += "Next Move: " + nextMovement;
+            if (destinationVector != null)
+                output += "Destination vector: " + destinationVector + "\n";
+            else
+                output += "Destination vector: null";
+            output += "Speed: " + speed + "\n";
 
             return output;
         }
@@ -35,18 +35,24 @@ namespace Assets.Scripts.Components
             else return false;
         }
 
-        public bool IsMoving { get { return moving; } }
-
         public Coordinates Coordinates
         {
             get { return entity.Coordinates; }
         }
+
+        public bool IsMoving { get { return moving; } }
+
+        public Entity Entity { get { return entity; } }
+
+        public Rigidbody2D RigidBody { get { return rigidbody; } }
+
+
+        internal bool moving;
+        internal Vector2 destinationVector = Vector2.zero;
+        internal float speed = 0f;
         
-        internal Entity entity;
-        internal new Rigidbody2D rigidbody;
-        internal Movement currentMovement;
-        internal Movement nextMovement;
-        internal bool moving = false;
+        private Entity entity;
+        private new Rigidbody2D rigidbody;
 
         private void Start()
         {

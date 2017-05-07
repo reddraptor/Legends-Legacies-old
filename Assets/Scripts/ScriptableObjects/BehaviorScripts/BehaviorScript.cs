@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Components;
+using Assets.Scripts.Data_Types;
 
 namespace Assets.Scripts.ScriptableObjects.BehaviorScripts
 {
@@ -8,9 +9,7 @@ namespace Assets.Scripts.ScriptableObjects.BehaviorScripts
     {
         public enum Direction { North, Northeast, East, Southeast, South, Southwest, West, Northwest}
 
-        public Behavior behavior;
-
-        public abstract void Run(BehaviorManager behaviorManager);
+        public abstract void Run(BehaviorsManager behaviorManager, Behaviors behaviors);
 
         public Vector2 DirectionVector(Direction direction)
         {

@@ -5,18 +5,18 @@ using Assets.Scripts.Data_Types.Serialization;
 
 namespace Assets.Scripts.Managers
 {
-    class PersistanceManager : MonoBehaviour
+    public class PersistanceManager : Manager
     {
         public string saveFileFolder = "WorldSaves";
         public string saveFileExtension = ".sav";
 
 
-        internal WorldManager worldManager;
         internal string saveFilePath;
 
-        private void Start()
+        protected override void Start()
         {
-            worldManager = GetComponent<WorldManager>();
+            base.Start();
+
             saveFilePath = Application.persistentDataPath + "/" + saveFileFolder + "/";
         }
 

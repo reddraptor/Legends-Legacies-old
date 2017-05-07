@@ -4,7 +4,7 @@ using Assets.Scripts.UI_Components.Menu;
 
 namespace Assets.Scripts.Managers
 {
-    public class MenuManager : MonoBehaviour
+    public class MenuManager : Manager
     {
         public GameObject[] menuPrefabs;
 
@@ -27,8 +27,10 @@ namespace Assets.Scripts.Managers
 
         /* UNITY MESSAGES */
         // Use this for initialization
-        void Start()
+        protected override void Start()
         {
+            base.Start();
+
             menuDictionary = new Dictionary<string, AMenu>();
 
             foreach (GameObject prefab in menuPrefabs)

@@ -1,21 +1,18 @@
 ﻿Current
 -------
+Behaviors
+-Hashcode, Equals, ToString -> from entity 
+
+BehaviorsManager
+-Make static BehaviorsList with Behaviors added and removed during spawning and despawning
+
+LoadedChunks and Chunks
+-Make into EntityCollections holding entities that are contained within it.
+
 
 Bugfixing to components up to this point
 
-
 Reevaluate entity properties, Placed and Show
-
-Behavior -Hashcode, Equals, ToString -> from entity
-
-
-
--Adjust movement system
---Fix mob interrupted movement bug FIXED!
---Fix attempting to add movement to despawned mobs FIXED
---entities ending up on the same spot and then unable to move
---Movement EventSystemHandler DONE
-
 
 Early enemy implementation
 -spawning and map scrolling DONE
@@ -172,6 +169,12 @@ Add ScreenManager - move handling of screen position of gameobjects and camera t
 MovementManager
 ---------------
 -Switch to a Vector2 in determining directions and distances DONE
+-Adjust movement system
+--Fix mob interrupted movement bug FIXED!
+--Fix attempting to add movement to despawned mobs FIXED
+--entities ending up on the same spot and then unable to move FIXED
+--Movement EventSystemHandler DONE
+
 
 EntityCollection implementation DONE
 -EntityMember DONE
